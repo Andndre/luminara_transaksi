@@ -22,12 +22,13 @@ class PaymentController extends Controller
     public function createTransaction(Request $request)
     {
         $request->validate([
+            'name' => 'nullable|string',
             'amount' => 'required|numeric|min:1000',
             'order_id' => 'nullable|string',
         ]);
 
         // Gunakan Order ID dari Client jika ada, atau buat baru
-        $orderId = $request->order_id ?? 'POS-'.time().'-'.rand(100, 999);
+        $orderId = $request->order_id ?? 'POS-' . time() . '-' . rand(100, 999);
 
         // Simpan dulu ke Database (Status: Pending)
         $trx = new Transaction();
@@ -43,7 +44,7 @@ class PaymentController extends Controller
                 'gross_amount' => (int) $request->amount,
             ],
             'customer_details' => [
-                'first_name' => "Customer",
+                'first_name' => $request->name ?? "Guest",
                 'email' => "guest@pos-system.com",
             ]
         ];
@@ -59,10 +60,10 @@ class PaymentController extends Controller
             // Generate Redirect URL (untuk non-mobile/webview)
             // Default Snap URL sandbox: https://app.sandbox.midtrans.com/snap/v2/vtweb/{token}
             // Production: https://app.midtrans.com/snap/v2/vtweb/{token}
-            $baseSnapUrl = Config::$isProduction 
-                ? 'https://app.midtrans.com/snap/v2/vtweb/' 
+            $baseSnapUrl = Config::$isProduction
+                ? 'https://app.midtrans.com/snap/v2/vtweb/'
                 : 'https://app.sandbox.midtrans.com/snap/v2/vtweb/';
-            
+
             $redirectUrl = $baseSnapUrl . $snapToken;
 
             return response()->json([
@@ -71,7 +72,6 @@ class PaymentController extends Controller
                 'redirect_url' => $redirectUrl,
                 'order_id' => $orderId
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
@@ -103,7 +103,8 @@ class PaymentController extends Controller
         try {
             // Cek langsung ke Server Midtrans
             $status = \Midtrans\Transaction::status($orderId);
-            
+
+            /** @var \stdClass $status */
             $transactionStatus = $status->transaction_status;
             $paymentType = $status->payment_type;
 
@@ -113,7 +114,7 @@ class PaymentController extends Controller
             } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
                 $trx->status = 'failed';
             }
-            
+
             $trx->save();
 
             return response()->json(['status' => 'success', 'data' => $trx]);
@@ -136,7 +137,7 @@ class PaymentController extends Controller
         $reqSignature = $request->signature_key;
 
         // Validasi Signature (Cek Keaslian Data)
-        $signature = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
+        $signature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
         if ($signature !== $reqSignature) {
             return response()->json(['message' => 'Invalid Signature'], 403);
