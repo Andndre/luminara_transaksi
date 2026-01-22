@@ -216,7 +216,12 @@
                             <option value="4 Jam">4 Jam</option>
                             <option value="5 Jam">5 Jam</option>
                             <option value="6 Jam">6 Jam</option>
-                            <option value="Full Day">Lebih dari 6 Jam</option>
+                            <option value="7 Jam">7 Jam</option>
+                            <option value="8 Jam">8 Jam</option>
+                            <option value="9 Jam">9 Jam</option>
+                            <option value="10 Jam">10 Jam</option>
+                            <option value="11 Jam">11 Jam</option>
+                            <option value="12 Jam">12 Jam</option>
                         </select>
                     </div>
                 </div>
