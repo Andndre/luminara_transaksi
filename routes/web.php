@@ -15,3 +15,8 @@ Route::get('/payment-finish', function () {
 Route::get('/payment-failed', function () {
     return view('payment_failed');
 });
+
+use App\Http\Controllers\BookingController;
+
+// Rute untuk memproses form booking
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
