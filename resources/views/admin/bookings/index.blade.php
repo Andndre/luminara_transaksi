@@ -27,7 +27,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-6">
                             <div class="font-medium text-gray-900">{{ $booking->event_date->format('d M Y') }}</div>
-                            <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->event_time)->format('H:i') }}</div>
+                            <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->event_time)->format('H:i') }} WITA</div>
                         </td>
                         <td class="py-4 px-6">
                             <div class="font-medium text-gray-900">{{ $booking->customer_name }}</div>

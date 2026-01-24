@@ -112,7 +112,7 @@ class BookingController extends Controller
             . "Acara: {$booking->event_type}\n"
             . "Paket: {$booking->package_name}\n"
             . "Tanggal: " . $booking->event_date->format('Y-m-d') . "\n"
-            . "Jam: {$booking->event_time}\n"
+            . "Jam: " . \Carbon\Carbon::parse($booking->event_time)->format('H:i') . " WITA\n"
             . "Durasi: {$booking->duration_hours} jam\n"
             . "Lokasi: {$booking->event_location}";
 
