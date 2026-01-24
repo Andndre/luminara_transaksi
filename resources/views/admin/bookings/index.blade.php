@@ -6,7 +6,13 @@
 </head>
 <body class="bg-gray-50 p-8">
     <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6">Daftar Booking</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">Daftar Booking</h1>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm font-bold">Logout</button>
+            </form>
+        </div>
         
         <div class="bg-white shadow rounded overflow-hidden">
             <table class="w-full text-left">
