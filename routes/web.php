@@ -1,22 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookingController;
 
-Route::get('/', function () {
-    return view('welcome');
+// Public Routes
+Route::get('/', [BookingController::class, 'landing'])->name('home');
+Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+Route::get('/calendar/availability', [BookingController::class, 'availability'])->name('calendar.availability');
+
+// Admin Routes (Should be protected by auth middleware in real app)
+Route::prefix('admin')->group(function () {
+    Route::get('/bookings', [BookingController::class, 'adminIndex'])->name('admin.bookings.index');
+    Route::patch('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('admin.bookings.update-status');
 });
 
-// Endpoint untuk Finish Redirect dari Midtrans
+// Legacy Midtrans Routes (Preserved)
 Route::get('/payment-finish', function () {
     return view('payment_finish');
 });
-
-// Endpoint untuk Error/Failed Redirect dari Midtrans
 Route::get('/payment-failed', function () {
     return view('payment_failed');
 });
-
-use App\Http\Controllers\BookingController;
-
-// Rute untuk memproses form booking
-Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');

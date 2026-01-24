@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking - Luminara Photobooth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luminara: {
+                            gold: '#D4AF37',
+                            dark: '#1a1a1a',
+                            light: '#f8f9fa',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="{{ route('home') }}" class="flex items-center gap-2">
+                    <img src="/images/logo.png" alt="Luminara Logo" class="h-10 w-auto">
+                    <span class="font-serif text-2xl font-bold tracking-tight text-gray-900">Luminara</span>
+                </a>
+                <a href="{{ route('home') }}" class="text-sm font-medium text-gray-500 hover:text-luminara-gold">
+                    &larr; Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-12">
+            
+            <!-- Kolom Kiri: Form -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 p-8 md:p-12">
+                    <h1 class="font-serif text-3xl font-bold mb-2">Formulir Pemesanan</h1>
+                    <p class="text-gray-500 mb-8">Lengkapi detail acara Anda untuk mengamankan tanggal.</p>
+
+                    @if ($errors->any())
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r">
+                            <div class="flex">
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700 font-medium">Mohon perbaiki kesalahan berikut:</p>
+                                    <ul class="mt-1 list-disc list-inside text-sm text-red-600">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('booking.store') }}" method="POST" id="bookingForm" class="space-y-8">
+                        @csrf
+                        
+                        <!-- Bagian 1: Jadwal Event -->
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">1. Jadwal Acara</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal</label>
+                                    <input type="date" name="event_date" id="event_date" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required min="{{ date('Y-m-d') }}">
+                                    <p class="mt-2 text-xs text-gray-500" id="date-status">Cek ketersediaan...</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jam Mulai Sesi</label>
+                                    <input type="time" name="event_time" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bagian 2: Paket -->
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">2. Pilih Paket</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Paket</label>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="photobooth" class="peer sr-only" onchange="updatePackage('Unlimited Photobooth', 'photobooth', 2000000)">
+                                            <div class="p-4 rounded-xl border-2 border-gray-200 hover:border-luminara-gold peer-checked:border-luminara-gold peer-checked:bg-yellow-50 transition text-center h-full">
+                                                <div class="font-bold text-gray-900">Photobooth</div>
+                                                <div class="text-sm text-gray-500">Cetak Unlimited</div>
+                                                <div class="text-xs text-luminara-gold font-bold mt-1">Rp 2.000k / 2 jam</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="videobooth360" class="peer sr-only" onchange="updatePackage('Videobooth 360', 'videobooth360', 2000000)">
+                                            <div class="p-4 rounded-xl border-2 border-gray-200 hover:border-luminara-gold peer-checked:border-luminara-gold peer-checked:bg-yellow-50 transition text-center h-full">
+                                                <div class="font-bold text-gray-900">Videobooth 360</div>
+                                                <div class="text-sm text-gray-500">Video Unlimited</div>
+                                                <div class="text-xs text-luminara-gold font-bold mt-1">Rp 2.000k / 2 jam</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="combo" class="peer sr-only" onchange="updatePackage('Combo Ultimate', 'combo', 3950000)">
+                                            <div class="p-4 rounded-xl border-2 border-gray-200 hover:border-luminara-gold peer-checked:border-luminara-gold peer-checked:bg-yellow-50 transition text-center h-full">
+                                                <div class="font-bold text-gray-900">Combo Ultimate</div>
+                                                <div class="text-sm text-gray-500">Foto + Video 360</div>
+                                                <div class="text-xs text-luminara-gold font-bold mt-1">Rp 3.950k / 2 jam</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <input type="hidden" name="package_name" id="package_name">
+                                    <input type="hidden" name="package_type" id="package_type">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Durasi (Jam)</label>
+                                    <select name="duration_hours" id="duration_hours" onchange="calculateTotal()" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold">
+                                        <option value="2">2 Jam (Default)</option>
+                                        <option value="3">3 Jam</option>
+                                        <option value="4">4 Jam</option>
+                                        <option value="5">5 Jam</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Estimasi Total</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 font-bold">Rp</span>
+                                        <input type="text" id="display_price" class="w-full pl-10 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl font-bold text-gray-900" readonly value="0">
+                                        <input type="hidden" name="price_total" id="price_total" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bagian 3: Data Pemesan -->
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">3. Data Diri & Acara</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                                    <input type="text" name="customer_name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="Nama Anda">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
+                                    <input type="tel" name="customer_phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="08xxxxxxxxxx">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Acara</label>
+                                    <input type="text" name="event_type" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="Contoh: Pernikahan Budi & Ani">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Acara</label>
+                                    <textarea name="event_location" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="Nama Hotel/Gedung & Alamat"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
+                                    <textarea name="notes" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" placeholder="Request khusus atau tema acara"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <button type="submit" class="w-full bg-luminara-gold text-white text-lg font-bold py-4 rounded-xl shadow-lg hover:bg-yellow-600 transition transform hover:-translate-y-0.5">
+                                Konfirmasi via WhatsApp
+                            </button>
+                            <p class="text-center text-xs text-gray-500 mt-4">
+                                Pesanan akan diteruskan ke WhatsApp Admin untuk validasi jadwal dan pembayaran DP.
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Info -->
+            <div class="lg:col-span-4 mt-8 lg:mt-0">
+                <div class="bg-gray-900 text-white rounded-3xl p-8 shadow-xl mb-8">
+                    <h3 class="font-serif text-2xl font-bold mb-6">Cara Memesan</h3>
+                    <ul class="space-y-6">
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-luminara-gold text-black rounded-full flex items-center justify-center font-bold">1</span>
+                            <p class="text-sm">Isi formulir dengan detail acara Anda.</p>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                            <p class="text-sm">Klik tombol konfirmasi untuk mengirim pesan ke Admin.</p>
+                        </li>
+                        <li class="flex gap-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                            <p class="text-sm">Lakukan pembayaran DP Rp 500.000 untuk mengunci jadwal.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let basePrice = 0;
+        function updatePackage(name, type, price) {
+            document.getElementById('package_name').value = name;
+            document.getElementById('package_type').value = type;
+            basePrice = price;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const duration = parseInt(document.getElementById('duration_hours').value) || 2;
+            let total = 0;
+            if (basePrice > 0) {
+                let extraHours = duration - 2;
+                let hourlyRate = 0;
+                const type = document.getElementById('package_type').value;
+                if (type === 'photobooth') hourlyRate = 700000;
+                else if (type === 'videobooth360') hourlyRate = 900000;
+                else if (type === 'combo') hourlyRate = 1200000;
+                total = basePrice + (extraHours * hourlyRate);
+            }
+            document.getElementById('price_total').value = total;
+            document.getElementById('display_price').value = new Intl.NumberFormat('id-ID').format(total);
+        }
+
+        const dateInput = document.getElementById('event_date');
+        const statusText = document.getElementById('date-status');
+        dateInput.addEventListener('change', async function() {
+            const date = this.value;
+            if (!date) return;
+            statusText.textContent = "Mengecek ketersediaan...";
+            statusText.className = "mt-2 text-xs text-blue-500";
+            try {
+                const month = date.slice(0, 7);
+                const response = await fetch(`/calendar/availability?month=${month}`);
+                const data = await response.json();
+                const dayData = data.find(item => item.date === date);
+                if (dayData && (dayData.is_blocked || dayData.booking_count >= dayData.max_booking)) {
+                    alert("Maaf, tanggal ini sudah penuh atau tidak tersedia.");
+                    this.value = '';
+                    statusText.textContent = "Tidak tersedia.";
+                    statusText.className = "mt-2 text-xs text-red-500";
+                } else {
+                    statusText.textContent = "Tersedia! Silakan lanjut mengisi form.";
+                    statusText.className = "mt-2 text-xs text-green-600 font-bold";
+                }
+            } catch (e) {
+                statusText.textContent = "Gagal cek jadwal.";
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type');
+            if (type) {
+                const radio = document.querySelector(`input[value="${type}"]`);
+                if (radio) radio.click();
+            }
+        });
+    </script>
+</body>
+</html>
