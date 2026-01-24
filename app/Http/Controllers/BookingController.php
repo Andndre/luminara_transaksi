@@ -114,15 +114,41 @@ class BookingController extends Controller
             . "Tanggal: " . $booking->event_date->format('Y-m-d') . "\n"
             . "Jam: {$booking->event_time}\n"
             . "Durasi: {$booking->duration_hours} jam\n"
-            . "Lokasi: {$booking->event_location}\n"
-            . "Total: Rp " . number_format($booking->price_total, 0, ',', '.') . "\n\n"
-            . "Status: PENDING";
+            . "Lokasi: {$booking->event_location}";
 
         $encodedMessage = urlencode($message);
-        $adminPhone = '6281234567890'; 
+        $adminPhone = '6287788986136'; 
         $waUrl = "https://wa.me/{$adminPhone}?text={$encodedMessage}";
 
         return redirect()->away($waUrl);
+    }
+
+    // Admin: Dashboard Overview
+    public function dashboard()
+    {
+        // Monthly Stats
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d');
+        $endOfMonth = now()->endOfMonth()->format('Y-m-d');
+
+        $totalBookings = Booking::whereBetween('event_date', [$startOfMonth, $endOfMonth])
+            ->where('status', '!=', Booking::STATUS_DIBATALKAN)
+            ->count();
+
+        $revenue = Booking::whereBetween('event_date', [$startOfMonth, $endOfMonth])
+            ->whereIn('status', [Booking::STATUS_LUNAS, Booking::STATUS_DP_DIBAYAR])
+            ->sum('price_total');
+
+        $pendingCount = Booking::where('status', Booking::STATUS_PENDING)->count();
+
+        // Upcoming Events (Next 7 Days)
+        $upcomingEvents = Booking::where('event_date', '>=', now()->format('Y-m-d'))
+            ->where('event_date', '<=', now()->addDays(7)->format('Y-m-d'))
+            ->where('status', '!=', Booking::STATUS_DIBATALKAN)
+            ->orderBy('event_date', 'asc')
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        return view('admin.dashboard', compact('totalBookings', 'revenue', 'pendingCount', 'upcomingEvents'));
     }
 
     // Admin: List Bookings
@@ -143,5 +169,33 @@ class BookingController extends Controller
         $booking->update(['status' => $request->status]);
         
         return back()->with('success', 'Status updated.');
+    }
+
+    // Admin: Calendar & Block Dates
+    public function calendarIndex()
+    {
+        $blockedDates = BlockedDate::orderBy('date', 'desc')->get();
+        return view('admin.calendar.index', compact('blockedDates'));
+    }
+
+    public function blockDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date|unique:blocked_dates,date',
+            'reason' => 'nullable|string'
+        ]);
+
+        BlockedDate::create([
+            'date' => $request->date,
+            'reason' => $request->reason
+        ]);
+
+        return back()->with('success', 'Tanggal berhasil diblokir.');
+    }
+
+    public function unblockDate($id)
+    {
+        BlockedDate::findOrFail($id)->delete();
+        return back()->with('success', 'Tanggal kembali dibuka.');
     }
 }

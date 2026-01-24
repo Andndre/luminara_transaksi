@@ -1,51 +1,54 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Bookings</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 p-8">
-    <div class="max-w-6xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Daftar Booking</h1>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm font-bold">Logout</button>
-            </form>
+@extends('layouts.admin')
+
+@section('content')
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Daftar Booking</h1>
+            <p class="text-gray-500">Kelola semua pesanan masuk di sini.</p>
         </div>
-        
-        <div class="bg-white shadow rounded overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-gray-100 border-b">
+        <!-- Optional: Filter Button or Export -->
+    </div>
+    
+    <div class="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
-                        <th class="p-4">Tanggal</th>
-                        <th class="p-4">Nama</th>
-                        <th class="p-4">Paket</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Aksi</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Tanggal & Jam</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Pelanggan</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Paket</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach($bookings as $booking)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-4">{{ $booking->event_date->format('d M Y') }}</td>
-                        <td class="p-4">
-                            {{ $booking->customer_name }}<br>
-                            <span class="text-sm text-gray-500">{{ $booking->customer_phone }}</span>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($bookings as $booking)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-4 px-6">
+                            <div class="font-medium text-gray-900">{{ $booking->event_date->format('d M Y') }}</div>
+                            <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->event_time)->format('H:i') }}</div>
                         </td>
-                        <td class="p-4">{{ $booking->package_name }}</td>
-                        <td class="p-4">
-                            <span class="px-2 py-1 rounded text-xs font-bold
-                                {{ $booking->status == 'LUNAS' ? 'bg-green-100 text-green-800' : 
-                                   ($booking->status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
-                                {{ $booking->status }}
-                            </span>
+                        <td class="py-4 px-6">
+                            <div class="font-medium text-gray-900">{{ $booking->customer_name }}</div>
+                            <div class="text-xs text-gray-500">{{ $booking->customer_phone }}</div>
                         </td>
-                        <td class="p-4">
-                            <form action="{{ route('admin.bookings.update-status', $booking->id) }}" method="POST" class="inline">
+                        <td class="py-4 px-6">
+                            <div class="text-sm text-gray-900">{{ $booking->package_name }}</div>
+                            <div class="text-xs text-gray-500">{{ $booking->duration_hours }} Jam</div>
+                        </td>
+                         <td class="py-4 px-6 text-sm font-medium text-gray-900">
+                            Rp {{ number_format($booking->price_total, 0, ',', '.') }}
+                        </td>
+                        <td class="py-4 px-6">
+                            <form action="{{ route('admin.bookings.update-status', $booking->id) }}" method="POST" id="status-form-{{ $booking->id }}">
                                 @csrf
                                 @method('PATCH')
-                                <select name="status" onchange="this.form.submit()" class="border rounded p-1 text-sm">
+                                <select name="status" onchange="document.getElementById('status-form-{{ $booking->id }}').submit()" 
+                                    class="text-xs font-bold rounded-full px-3 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-yellow-400
+                                    {{ $booking->status == 'LUNAS' ? 'bg-green-100 text-green-800' : 
+                                       ($booking->status == 'DP_DIBAYAR' ? 'bg-blue-100 text-blue-800' : 
+                                       ($booking->status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800')) }}">
                                     <option value="PENDING" {{ $booking->status == 'PENDING' ? 'selected' : '' }}>PENDING</option>
                                     <option value="DP_DIBAYAR" {{ $booking->status == 'DP_DIBAYAR' ? 'selected' : '' }}>DP DIBAYAR</option>
                                     <option value="LUNAS" {{ $booking->status == 'LUNAS' ? 'selected' : '' }}>LUNAS</option>
@@ -53,15 +56,23 @@
                                 </select>
                             </form>
                         </td>
+                        <td class="py-4 px-6 text-right">
+                           <a href="https://wa.me/{{ preg_replace('/^0/', '62', $booking->customer_phone) }}" target="_blank" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                               Chat WA
+                           </a>
+                        </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-gray-500">Belum ada data booking.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-        
-        <div class="mt-4">
-            {{ $bookings->links() }}
-        </div>
     </div>
-</body>
-</html>
+    
+    <div class="mt-6">
+        {{ $bookings->links() }}
+    </div>
+@endsection

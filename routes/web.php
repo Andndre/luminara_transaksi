@@ -17,8 +17,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes (Protected)
 Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/', [BookingController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/bookings', [BookingController::class, 'adminIndex'])->name('admin.bookings.index');
     Route::patch('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('admin.bookings.update-status');
+    
+    // Calendar Routes
+    Route::get('/calendar', [BookingController::class, 'calendarIndex'])->name('admin.calendar.index');
+    Route::post('/calendar/block', [BookingController::class, 'blockDate'])->name('admin.calendar.block');
+    Route::delete('/calendar/{id}', [BookingController::class, 'unblockDate'])->name('admin.calendar.unblock');
 });
 
 // Legacy Midtrans Routes

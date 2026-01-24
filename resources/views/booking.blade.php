@@ -1,11 +1,43 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking - Luminara Photobooth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <style>
+        .flatpickr-day.selected {
+            background: #D4AF37 !important;
+            border-color: #D4AF37 !important;
+        }
+        .day-marker {
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+        .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #ef4444; }
+        .dot-green { background-color: #22c55e; }
+        .dot-yellow { background-color: #eab308; }
+        
+        .flatpickr-day.blocked {
+            background-color: #fee2e2 !important;
+            color: #ef4444 !important;
+            text-decoration: line-through;
+        }
+        .flatpickr-day.full-booked {
+            background-color: #fee2e2 !important;
+            color: #ef4444 !important;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -76,8 +108,8 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal</label>
-                                    <input type="date" name="event_date" id="event_date" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required min="{{ date('Y-m-d') }}">
-                                    <p class="mt-2 text-xs text-gray-500" id="date-status">Cek ketersediaan...</p>
+                                    <input type="text" name="event_date" id="event_date" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold bg-white" required placeholder="Pilih tanggal..." readonly>
+                                    <p class="mt-2 text-xs text-gray-500" id="date-status">Silakan pilih tanggal di kalender.</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Jam Mulai Sesi</label>
@@ -207,6 +239,8 @@
 
     <script>
         let basePrice = 0;
+        let availabilityData = [];
+
         function updatePackage(name, type, price) {
             document.getElementById('package_name').value = name;
             document.getElementById('package_type').value = type;
@@ -230,38 +264,97 @@
             document.getElementById('display_price').value = new Intl.NumberFormat('id-ID').format(total);
         }
 
-        const dateInput = document.getElementById('event_date');
-        const statusText = document.getElementById('date-status');
-        dateInput.addEventListener('change', async function() {
-            const date = this.value;
-            if (!date) return;
-            statusText.textContent = "Mengecek ketersediaan...";
-            statusText.className = "mt-2 text-xs text-blue-500";
+        // Initialize Flatpickr
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Fetch Availability Data first
             try {
-                const month = date.slice(0, 7);
-                const response = await fetch(`/calendar/availability?month=${month}`);
-                const data = await response.json();
-                const dayData = data.find(item => item.date === date);
-                if (dayData && (dayData.is_blocked || dayData.booking_count >= dayData.max_booking)) {
-                    alert("Maaf, tanggal ini sudah penuh atau tidak tersedia.");
-                    this.value = '';
-                    statusText.textContent = "Tidak tersedia.";
-                    statusText.className = "mt-2 text-xs text-red-500";
-                } else {
-                    statusText.textContent = "Tersedia! Silakan lanjut mengisi form.";
-                    statusText.className = "mt-2 text-xs text-green-600 font-bold";
-                }
+                // Fetch for current and next month to populate markers
+                const currentMonth = new Date().toISOString().slice(0, 7);
+                // Simple fetch for current month for now, ideally fetch based on calendar view change
+                const response = await fetch(`/calendar/availability?month=${currentMonth}`);
+                availabilityData = await response.json();
             } catch (e) {
-                statusText.textContent = "Gagal cek jadwal.";
+                console.error("Failed to load availability", e);
             }
-        });
 
-        window.addEventListener('DOMContentLoaded', () => {
+            const fp = flatpickr("#event_date", {
+                locale: "id",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "j F Y",
+                disable: [
+                    function(date) {
+                        // Check if date is blocked or full
+                        const dateStr = date.toISOString().slice(0, 10);
+                        const data = availabilityData.find(item => item.date === dateStr);
+                        if (data) {
+                            return data.is_blocked || data.booking_count >= data.max_booking;
+                        }
+                        return false;
+                    }
+                ],
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = dayElem.dateObj.toISOString().slice(0, 10);
+                    const data = availabilityData.find(item => item.date === dateStr);
+
+                    if (data) {
+                        if (data.is_blocked) {
+                            dayElem.classList.add("blocked");
+                            dayElem.title = "Tidak Tersedia";
+                        } else if (data.booking_count >= data.max_booking) {
+                            dayElem.classList.add("full-booked");
+                            dayElem.title = "Penuh";
+                        } else if (data.booking_count > 0) {
+                            // Add dots for existing bookings
+                            const marker = document.createElement("div");
+                            marker.className = "day-marker";
+                            
+                            // Show dots equal to booking count (max 3 for visual)
+                            const count = Math.min(data.booking_count, 3);
+                            for(let i=0; i<count; i++) {
+                                const dot = document.createElement("span");
+                                dot.className = "dot dot-green"; // Green for booked slots
+                                marker.appendChild(dot);
+                            }
+                            dayElem.appendChild(marker);
+                        }
+                    }
+                },
+                onMonthChange: async function(selectedDates, dateStr, instance) {
+                    // Refetch data when month changes
+                    const year = instance.currentYear;
+                    const month = String(instance.currentMonth + 1).padStart(2, '0');
+                    try {
+                        const response = await fetch(`/calendar/availability?month=${year}-${month}`);
+                        availabilityData = await response.json();
+                        instance.redraw();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    const statusText = document.getElementById('date-status');
+                    if(selectedDates.length > 0) {
+                        statusText.textContent = "Tanggal tersedia!";
+                        statusText.className = "mt-2 text-xs text-green-600 font-bold";
+                    } else {
+                        statusText.textContent = "Silakan pilih tanggal.";
+                        statusText.className = "mt-2 text-xs text-gray-500";
+                    }
+                }
+            });
+
+            // Auto-select package from URL
             const params = new URLSearchParams(window.location.search);
             const type = params.get('type');
             if (type) {
                 const radio = document.querySelector(`input[value="${type}"]`);
-                if (radio) radio.click();
+                if (radio) {
+                    radio.click();
+                    // Scroll to form
+                    document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth' });
+                }
             }
         });
     </script>
