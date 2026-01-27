@@ -1,6 +1,14 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking - Luminara Photobooth</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
     <!-- Flatpickr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -10,6 +18,7 @@
             background: #D4AF37 !important;
             border-color: #D4AF37 !important;
         }
+
         .day-marker {
             position: absolute;
             bottom: 2px;
@@ -19,20 +28,31 @@
             justify-content: center;
             gap: 2px;
         }
+
         .dot {
             width: 4px;
             height: 4px;
             border-radius: 50%;
         }
-        .dot-red { background-color: #ef4444; }
-        .dot-green { background-color: #22c55e; }
-        .dot-yellow { background-color: #eab308; }
-        
+
+        .dot-red {
+            background-color: #ef4444;
+        }
+
+        .dot-green {
+            background-color: #22c55e;
+        }
+
+        .dot-yellow {
+            background-color: #eab308;
+        }
+
         .flatpickr-day.blocked {
             background-color: #fee2e2 !important;
             color: #ef4444 !important;
             text-decoration: line-through;
         }
+
         .flatpickr-day.full-booked {
             background-color: #fee2e2 !important;
             color: #ef4444 !important;
@@ -58,38 +78,43 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+<body class="bg-gray-50 font-sans text-gray-800 antialiased">
 
     <!-- Navbar -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+    <nav class="sticky top-0 z-50 bg-white shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between md:h-20">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <img src="/images/logo.png" alt="Luminara Logo" class="h-10 w-auto">
-                    <span class="font-serif text-2xl font-bold tracking-tight text-gray-900">Luminara</span>
+                    <img src="/images/logo.png" alt="Luminara Logo" class="h-8 w-auto md:h-10">
+                    <span class="font-serif text-xl font-bold tracking-tight text-gray-900 md:text-2xl">Luminara</span>
                 </a>
-                <a href="{{ route('home') }}" class="text-sm font-medium text-gray-500 hover:text-luminara-gold">
-                    &larr; Kembali ke Beranda
+                <a href="{{ route('home') }}"
+                    class="hover:text-luminara-gold flex items-center gap-1 text-xs font-medium text-gray-500 md:text-sm">
+                    <span>&larr;</span> <span class="hidden md:inline">Kembali ke Beranda</span><span
+                        class="md:hidden">Beranda</span>
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mx-auto max-w-7xl px-3 py-6 sm:px-6 md:py-12 lg:px-8">
         <div class="lg:grid lg:grid-cols-12 lg:gap-12">
-            
+
             <!-- Kolom Kiri: Form -->
             <div class="lg:col-span-8">
-                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 p-8 md:p-12">
-                    <h1 class="font-serif text-3xl font-bold mb-2">Formulir Pemesanan</h1>
-                    <p class="text-gray-500 mb-8">Lengkapi detail acara Anda untuk mengamankan tanggal.</p>
+                <div
+                    class="overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-xl md:rounded-3xl md:p-12">
+                    <h1 class="mb-2 font-serif text-2xl font-bold md:text-3xl">Formulir Pemesanan</h1>
+                    <p class="mb-6 text-sm text-gray-500 md:mb-8 md:text-base">Lengkapi detail acara Anda untuk
+                        mengamankan tanggal.</p>
 
                     @if ($errors->any())
-                        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r">
+                        <div class="mb-8 rounded-r border-l-4 border-red-500 bg-red-50 p-4">
                             <div class="flex">
                                 <div class="ml-3">
-                                    <p class="text-sm text-red-700 font-medium">Mohon perbaiki kesalahan berikut:</p>
-                                    <ul class="mt-1 list-disc list-inside text-sm text-red-600">
+                                    <p class="text-sm font-medium text-red-700">Mohon perbaiki kesalahan berikut:</p>
+                                    <ul class="mt-1 list-inside list-disc text-sm text-red-600">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
                                         @endforeach
@@ -99,76 +124,179 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('booking.store') }}" method="POST" id="bookingForm" class="space-y-8">
+                    <form action="{{ route('booking.store') }}" method="POST" id="bookingForm"
+                        class="space-y-6 md:space-y-8" enctype="multipart/form-data">
                         @csrf
-                        
+
                         <!-- Bagian 1: Jadwal Event -->
                         <div>
-                            <h2 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">1. Jadwal Acara</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <h2 class="mb-4 border-b pb-2 text-base font-bold text-gray-900 md:text-lg">1. Jadwal Acara
+                            </h2>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal</label>
-                                    <input type="text" name="event_date" id="event_date" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold bg-white" required placeholder="Pilih tanggal..." readonly>
-                                    <p class="mt-2 text-xs text-gray-500" id="date-status">Silakan pilih tanggal di kalender.</p>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Pilih Tanggal</label>
+                                    <input type="text" name="event_date" id="event_date"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 bg-white px-4 py-3"
+                                        required placeholder="Pilih tanggal..." readonly>
+                                    <p class="mt-2 text-xs text-gray-500" id="date-status">Silakan pilih tanggal di
+                                        kalender.</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jam Mulai Sesi</label>
-                                    <input type="time" name="event_time" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Jam Mulai Sesi</label>
+                                    <input type="time" name="event_time"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3"
+                                        required>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Bagian 2: Paket -->
                         <div>
-                            <h2 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">2. Pilih Paket</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <h2 class="mb-4 border-b pb-2 text-base font-bold text-gray-900 md:text-lg">2. Pilih Paket
+                            </h2>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Paket</label>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="photobooth" class="peer sr-only" onchange="updatePackage('Unlimited Photobooth', 'photobooth', 2000000)">
-                                            <div class="p-4 rounded-xl border-2 border-gray-200 hover:border-luminara-gold peer-checked:border-luminara-gold peer-checked:bg-yellow-50 transition text-center h-full">
-                                                <div class="font-bold text-gray-900">Photobooth</div>
-                                                <div class="text-sm text-gray-500">Cetak Unlimited</div>
-                                                <div class="text-xs text-luminara-gold font-bold mt-1">Rp 2.000k / 2 jam</div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Tipe Paket</label>
+                                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
+
+                                        <!-- Photobooth Unlimited Print -->
+                                        <label class="group relative cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="pb_unlimited"
+                                                class="peer sr-only" required
+                                                onchange="updatePackage('Photobooth Unlimited Print', 'pb_unlimited', 2000000)">
+                                            <div
+                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                <div>
+                                                    <div class="font-bold text-gray-900">Photobooth Unlimited Print
+                                                    </div>
+                                                    <div class="mt-1 text-xs text-gray-500">Cetak Sepuasnya Selama Sesi
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
+                                                    Rp 2.000k / 2 jam</div>
                                             </div>
                                         </label>
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="videobooth360" class="peer sr-only" onchange="updatePackage('Videobooth 360', 'videobooth360', 2000000)">
-                                            <div class="p-4 rounded-xl border-2 border-gray-200 hover:border-luminara-gold peer-checked:border-luminara-gold peer-checked:bg-yellow-50 transition text-center h-full">
-                                                <div class="font-bold text-gray-900">Videobooth 360</div>
-                                                <div class="text-sm text-gray-500">Video Unlimited</div>
-                                                <div class="text-xs text-luminara-gold font-bold mt-1">Rp 2.000k / 2 jam</div>
+
+                                        <!-- Photobooth Limited Print -->
+                                        <label class="group relative cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="pb_limited"
+                                                class="peer sr-only" required
+                                                onchange="updatePackage('Photobooth Limited Print', 'pb_limited', 1300000)">
+                                            <div
+                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                <div>
+                                                    <div class="font-bold text-gray-900">Photobooth Limited Print</div>
+                                                    <div class="mt-1 text-xs text-gray-500">Kuota Cetak 50 - 900 Lembar
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
+                                                    Rp 1.300k / 2 jam</div>
                                             </div>
                                         </label>
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="combo" class="peer sr-only" onchange="updatePackage('Combo Ultimate', 'combo', 3950000)">
-                                            <div class="p-4 rounded-xl border-2 border-gray-200 hover:border-luminara-gold peer-checked:border-luminara-gold peer-checked:bg-yellow-50 transition text-center h-full">
-                                                <div class="font-bold text-gray-900">Combo Ultimate</div>
-                                                <div class="text-sm text-gray-500">Foto + Video 360</div>
-                                                <div class="text-xs text-luminara-gold font-bold mt-1">Rp 3.950k / 2 jam</div>
+
+                                        <!-- Photobooth Unlimited File Only -->
+                                        <label class="group relative cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="pb_file"
+                                                class="peer sr-only" required
+                                                onchange="updatePackage('Photobooth Unlimited File Only', 'pb_file', 1000000)">
+                                            <div
+                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                <div>
+                                                    <div class="font-bold text-gray-900">Photobooth Unlimited File Only
+                                                    </div>
+                                                    <div class="mt-1 text-xs text-gray-500">Hanya Softcopy (QR Download)
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
+                                                    Rp 1.000k / 2 jam</div>
                                             </div>
                                         </label>
+
+                                        <!-- Videobooth 360 -->
+                                        <label class="group relative cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="videobooth360"
+                                                class="peer sr-only" required
+                                                onchange="updatePackage('Videobooth 360', 'videobooth360', 2000000)">
+                                            <div
+                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                <div>
+                                                    <div class="font-bold text-gray-900">Videobooth 360</div>
+                                                    <div class="mt-1 text-xs text-gray-500">Unlimited Slowmo & Rewind
+                                                        Video</div>
+                                                </div>
+                                                <div
+                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
+                                                    Rp 2.000k / 2 jam</div>
+                                            </div>
+                                        </label>
+
+                                        <!-- Combo Package Print -->
+                                        <label class="group relative cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="combo_unlimited"
+                                                class="peer sr-only" required
+                                                onchange="updatePackage('Combo Package Print', 'combo_unlimited', 3950000)">
+                                            <div
+                                                class="border-luminara-gold/40 hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 bg-yellow-50/10 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                <div
+                                                    class="bg-luminara-gold absolute right-0 top-0 rounded-bl-lg px-2 py-0.5 text-[10px] font-bold text-white">
+                                                    BEST VALUE</div>
+                                                <div>
+                                                    <div class="font-bold text-gray-900">Combo Package Print</div>
+                                                    <div class="mt-1 text-xs text-gray-500">Unlimited Print & Video 360
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
+                                                    Rp 3.950k / 2 jam</div>
+                                            </div>
+                                        </label>
+
+                                        <!-- Combo File Only -->
+                                        <label class="group relative cursor-pointer">
+                                            <input type="radio" name="package_type_select" value="combo_file"
+                                                class="peer sr-only" required
+                                                onchange="updatePackage('Combo File Only', 'combo_file', 2800000)">
+                                            <div
+                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                <div>
+                                                    <div class="font-bold text-gray-900">Combo File Only</div>
+                                                    <div class="mt-1 text-xs text-gray-500">Unlimited Photobooth &
+                                                        Video 360</div>
+                                                </div>
+                                                <div
+                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
+                                                    Rp 2.800k / 2 jam</div>
+                                            </div>
+                                        </label>
+
                                     </div>
                                     <input type="hidden" name="package_name" id="package_name">
                                     <input type="hidden" name="package_type" id="package_type">
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Durasi (Jam)</label>
-                                    <select name="duration_hours" id="duration_hours" onchange="calculateTotal()" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold">
-                                        <option value="2">2 Jam (Default)</option>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Durasi (Jam)</label>
+                                    <select name="duration_hours" id="duration_hours" onchange="calculateTotal()"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3 text-sm md:text-base">
+                                        <option value="2">2 Jam (Min)</option>
                                         <option value="3">3 Jam</option>
                                         <option value="4">4 Jam</option>
                                         <option value="5">5 Jam</option>
+                                        <option value="6">6 Jam</option>
                                     </select>
                                 </div>
-                                
+
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Estimasi Total</label>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Estimasi Total</label>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 font-bold">Rp</span>
-                                        <input type="text" id="display_price" class="w-full pl-10 pr-4 py-3 bg-gray-100 border border-gray-300 rounded-xl font-bold text-gray-900" readonly value="0">
+                                        <span
+                                            class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-500">Rp</span>
+                                        <input type="text" id="display_price"
+                                            class="w-full rounded-xl border border-gray-300 bg-gray-100 py-3 pl-10 pr-4 text-sm font-bold text-gray-900 md:text-base"
+                                            readonly value="0">
                                         <input type="hidden" name="price_total" id="price_total" value="0">
                                     </div>
                                 </div>
@@ -177,36 +305,154 @@
 
                         <!-- Bagian 3: Data Pemesan -->
                         <div>
-                            <h2 class="text-lg font-bold text-gray-900 border-b pb-2 mb-4">3. Data Diri & Acara</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <h2 class="mb-4 border-b pb-2 text-base font-bold text-gray-900 md:text-lg">3. Data Diri &
+                                Acara</h2>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
-                                    <input type="text" name="customer_name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="Nama Anda">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                                    <input type="text" name="customer_name"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3"
+                                        required placeholder="Nama Anda">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
-                                    <input type="tel" name="customer_phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="08xxxxxxxxxx">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">WhatsApp</label>
+                                    <input type="tel" name="customer_phone"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3"
+                                        required placeholder="08xxxxxxxxxx">
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Acara</label>
-                                    <input type="text" name="event_type" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="Contoh: Pernikahan Budi & Ani">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Nama Acara</label>
+                                    <input type="text" name="event_type"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3"
+                                        required placeholder="Contoh: Pernikahan Budi & Ani">
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Acara</label>
-                                    <textarea name="event_location" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" required placeholder="Nama Hotel/Gedung & Alamat"></textarea>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Lokasi Acara</label>
+                                    <textarea name="event_location" rows="2"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold mb-3 w-full rounded-xl border border-gray-300 px-4 py-3"
+                                        required placeholder="Nama Gedung / Hotel & Alamat Lengkap"></textarea>
+
+                                    <div class="relative">
+                                        <div
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                                </path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <input type="url" name="event_maps_link"
+                                            class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 py-3 pl-10 pr-4 text-sm"
+                                            placeholder="Paste Link Google Maps di sini (Opsional)">
+                                    </div>
+                                    <p class="ml-1 mt-1 text-[10px] text-gray-500 md:text-xs">*Buka Google Maps > Cari
+                                        Lokasi > Share > Copy Link</p>
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
-                                    <textarea name="notes" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold" placeholder="Request khusus atau tema acara"></textarea>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Catatan
+                                        (Opsional)</label>
+                                    <textarea name="notes" rows="2"
+                                        class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3"
+                                        placeholder="Request khusus atau tema acara"></textarea>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Bagian 4: Pembayaran DP -->
+                        <div>
+                            <h2 class="mb-4 border-b pb-2 text-base font-bold text-gray-900 md:text-lg">4. Pembayaran
+                                DP</h2>
+                            <div class="relative mb-6 rounded-2xl border border-yellow-100 bg-yellow-50 p-4 md:p-6">
+                                <p class="mb-3 flex items-center gap-2 text-sm font-bold text-gray-900">
+                                    <svg class="text-luminara-gold h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Informasi Rekening (Minimal DP Rp 500.000)
+                                </p>
+                                <div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
+                                    <div class="space-y-1">
+                                        <p class="text-gray-500">Bank BRI:</p>
+                                        <div class="group flex cursor-pointer items-center gap-2"
+                                            onclick="copyToClipboard('460701039843530')">
+                                            <p
+                                                class="group-hover:text-luminara-gold font-mono text-lg font-bold text-gray-800 transition">
+                                                460701039843530</p>
+                                            <svg class="group-hover:text-luminara-gold h-4 w-4 text-gray-400"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <p class="text-xs">a.n Ida Bagus Yudhi Priyatna</p>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <p class="text-gray-500">SeaBank:</p>
+                                        <div class="group flex cursor-pointer items-center gap-2"
+                                            onclick="copyToClipboard('901207048574')">
+                                            <p
+                                                class="group-hover:text-luminara-gold font-mono text-lg font-bold text-gray-800 transition">
+                                                901207048574</p>
+                                            <svg class="group-hover:text-luminara-gold h-4 w-4 text-gray-400"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1 border-t border-yellow-200 pt-2 md:col-span-2">
+                                        <p class="text-gray-500">Shopeepay, OVO, Gopay:</p>
+                                        <div class="group flex cursor-pointer items-center gap-2"
+                                            onclick="copyToClipboard('081993009930')">
+                                            <p
+                                                class="group-hover:text-luminara-gold font-mono text-lg font-bold text-gray-800 transition">
+                                                081993009930</p>
+                                            <svg class="group-hover:text-luminara-gold h-4 w-4 text-gray-400"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Toast Notification -->
+                            <div id="toast-copy"
+                                class="pointer-events-none fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white opacity-0 shadow-lg transition-opacity duration-300">
+                                <svg class="h-4 w-4 text-green-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Nomor rekening disalin!
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer DP <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                                <div class="relative group">
+                                    <input type="file" name="payment_proof" id="payment_proof" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-luminara-gold focus:border-luminara-gold file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-luminara-gold hover:file:bg-yellow-100">
+                                </div>
+                                <p class="text-[10px] md:text-xs text-gray-500">Format: JPG, PNG. Maksimal 5MB. <br> <span class="text-luminara-gold">Tips:</span> Upload sekarang untuk mempercepat verifikasi jadwal.</p>
+                            </div>
+                        </div>
+
                         <div class="pt-6">
-                            <button type="submit" class="w-full bg-luminara-gold text-white text-lg font-bold py-4 rounded-xl shadow-lg hover:bg-yellow-600 transition transform hover:-translate-y-0.5">
+                            <button type="submit"
+                                class="bg-luminara-gold w-full transform rounded-xl py-4 text-lg font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-yellow-600">
                                 Konfirmasi via WhatsApp
                             </button>
-                            <p class="text-center text-xs text-gray-500 mt-4">
+                            <div id="package-error" class="hidden mt-2 text-center text-sm text-red-600 font-bold animate-bounce">
+                                Silakan pilih salah satu paket terlebih dahulu!
+                            </div>
+                            <p class="mt-4 text-center text-xs text-gray-500">
                                 Pesanan akan diteruskan ke WhatsApp Admin untuk validasi jadwal dan pembayaran DP.
                             </p>
                         </div>
@@ -215,20 +461,23 @@
             </div>
 
             <!-- Kolom Kanan: Info -->
-            <div class="lg:col-span-4 mt-8 lg:mt-0">
-                <div class="bg-gray-900 text-white rounded-3xl p-8 shadow-xl mb-8">
-                    <h3 class="font-serif text-2xl font-bold mb-6">Cara Memesan</h3>
+            <div class="mt-8 lg:col-span-4 lg:mt-0">
+                <div class="mb-8 rounded-3xl bg-gray-900 p-8 text-white shadow-xl">
+                    <h3 class="mb-6 font-serif text-2xl font-bold">Cara Memesan</h3>
                     <ul class="space-y-6">
                         <li class="flex gap-4">
-                            <span class="flex-shrink-0 w-8 h-8 bg-luminara-gold text-black rounded-full flex items-center justify-center font-bold">1</span>
+                            <span
+                                class="bg-luminara-gold flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-bold text-black">1</span>
                             <p class="text-sm">Isi formulir dengan detail acara Anda.</p>
                         </li>
                         <li class="flex gap-4">
-                            <span class="flex-shrink-0 w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                            <span
+                                class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-700 font-bold text-white">2</span>
                             <p class="text-sm">Klik tombol konfirmasi untuk mengirim pesan ke Admin.</p>
                         </li>
                         <li class="flex gap-4">
-                            <span class="flex-shrink-0 w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                            <span
+                                class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-700 font-bold text-white">3</span>
                             <p class="text-sm">Lakukan pembayaran DP Rp 500.000 untuk mengunci jadwal.</p>
                         </li>
                     </ul>
@@ -241,25 +490,147 @@
         let basePrice = 0;
         let availabilityData = [];
 
+        // Validation for Form Submit
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            const packageName = document.getElementById('package_name').value;
+            if (!packageName) {
+                e.preventDefault();
+                const errorDiv = document.getElementById('package-error');
+                errorDiv.classList.remove('hidden');
+                document.querySelector('[name="2. Pilih Paket"]').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                // Secure context (HTTPS/Localhost)
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    fallbackCopyTextToClipboard(text);
+                });
+            } else {
+                // Non-secure context fallback
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Ensure textarea is not visible but part of DOM
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                if (successful) showToast();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast-copy');
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        // Pricing Rules based on Pricelist
+        const packageRates = {
+            'pb_unlimited': {
+                hourly: 700000,
+                base: 2000000,
+                maxDuration: 12
+            },
+            'pb_limited': {
+                hourly: 300000,
+                base: 1300000,
+                maxDuration: 12
+            },
+            'pb_file': {
+                hourly: 300000,
+                base: 1000000,
+                maxDuration: 12
+            },
+            'videobooth360': {
+                hourly: 600000,
+                base: 2000000,
+                maxDuration: 8
+            },
+            'combo_unlimited': {
+                hourly: 1200000,
+                base: 3950000,
+                maxDuration: 10
+            },
+            'combo_file': {
+                hourly: 900000,
+                base: 2800000,
+                maxDuration: 10
+            }
+        };
+
         function updatePackage(name, type, price) {
             document.getElementById('package_name').value = name;
             document.getElementById('package_type').value = type;
             basePrice = price;
+
+            updateDurationOptions(type);
             calculateTotal();
+        }
+
+        function updateDurationOptions(type) {
+            const select = document.getElementById('duration_hours');
+            const currentVal = parseInt(select.value) || 2;
+            const max = packageRates[type] ? packageRates[type].maxDuration : 5;
+
+            select.innerHTML = ''; // Clear options
+
+            for (let i = 2; i <= max; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = i + ' Jam' + (i === 2 ? ' (Min)' : '');
+                select.appendChild(option);
+            }
+
+            // Restore selection if valid, else set to min (2)
+            if (currentVal <= max) {
+                select.value = currentVal;
+            } else {
+                select.value = 2;
+            }
         }
 
         function calculateTotal() {
             const duration = parseInt(document.getElementById('duration_hours').value) || 2;
+            const type = document.getElementById('package_type').value;
             let total = 0;
-            if (basePrice > 0) {
-                let extraHours = duration - 2;
-                let hourlyRate = 0;
-                const type = document.getElementById('package_type').value;
-                if (type === 'photobooth') hourlyRate = 700000;
-                else if (type === 'videobooth360') hourlyRate = 900000;
-                else if (type === 'combo') hourlyRate = 1200000;
+
+            if (type && packageRates[type]) {
+                let extraHours = Math.max(0, duration - 2);
+                let hourlyRate = packageRates[type].hourly;
+
+                // Refined estimation logic for Combo Unlimited steps
+                if (type === 'combo_unlimited') {
+                    if (extraHours > 0) hourlyRate = 950000;
+                }
+
                 total = basePrice + (extraHours * hourlyRate);
+            } else {
+                total = basePrice;
             }
+
             document.getElementById('price_total').value = total;
             document.getElementById('display_price').value = new Intl.NumberFormat('id-ID').format(total);
         }
@@ -285,8 +656,10 @@
                 altFormat: "j F Y",
                 disable: [
                     function(date) {
-                        // Check if date is blocked or full
-                        const dateStr = date.toISOString().slice(0, 10);
+                        // Check if date is blocked or full (Using local date components to avoid UTC shift)
+                        const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                        const dateStr = offsetDate.toISOString().slice(0, 10);
+                        
                         const data = availabilityData.find(item => item.date === dateStr);
                         if (data) {
                             return data.is_blocked || data.booking_count >= data.max_booking;
@@ -295,7 +668,10 @@
                     }
                 ],
                 onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const dateStr = dayElem.dateObj.toISOString().slice(0, 10);
+                    const date = dayElem.dateObj;
+                    const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                    const dateStr = offsetDate.toISOString().slice(0, 10);
+                    
                     const data = availabilityData.find(item => item.date === dateStr);
 
                     if (data) {
@@ -309,10 +685,10 @@
                             // Add dots for existing bookings
                             const marker = document.createElement("div");
                             marker.className = "day-marker";
-                            
+
                             // Show dots equal to booking count (max 3 for visual)
                             const count = Math.min(data.booking_count, 3);
-                            for(let i=0; i<count; i++) {
+                            for (let i = 0; i < count; i++) {
                                 const dot = document.createElement("span");
                                 dot.className = "dot dot-green"; // Green for booked slots
                                 marker.appendChild(dot);
@@ -326,7 +702,8 @@
                     const year = instance.currentYear;
                     const month = String(instance.currentMonth + 1).padStart(2, '0');
                     try {
-                        const response = await fetch(`/calendar/availability?month=${year}-${month}`);
+                        const response = await fetch(
+                            `/calendar/availability?month=${year}-${month}`);
                         availabilityData = await response.json();
                         instance.redraw();
                     } catch (e) {
@@ -335,7 +712,7 @@
                 },
                 onChange: function(selectedDates, dateStr, instance) {
                     const statusText = document.getElementById('date-status');
-                    if(selectedDates.length > 0) {
+                    if (selectedDates.length > 0) {
                         statusText.textContent = "Tanggal tersedia!";
                         statusText.className = "mt-2 text-xs text-green-600 font-bold";
                     } else {
@@ -353,10 +730,13 @@
                 if (radio) {
                     radio.click();
                     // Scroll to form
-                    document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('bookingForm').scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 }
             }
         });
     </script>
 </body>
+
 </html>

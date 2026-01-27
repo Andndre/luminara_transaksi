@@ -12,7 +12,6 @@ class Booking extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'event_date' => 'date',
         'price_total' => 'decimal:2',
         'duration_hours' => 'integer',
     ];

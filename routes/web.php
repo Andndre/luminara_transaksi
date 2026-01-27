@@ -6,6 +6,9 @@ use App\Http\Controllers\AuthController;
 
 // Public Routes
 Route::get('/', [BookingController::class, 'landing'])->name('home');
+Route::get('/pricelist', function () {
+    return view('pricelist');
+})->name('pricelist');
 Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/calendar/availability', [BookingController::class, 'availability'])->name('calendar.availability');

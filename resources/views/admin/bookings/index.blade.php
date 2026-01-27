@@ -14,7 +14,22 @@
             <table class="w-full text-left border-collapse">
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
-                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Tanggal & Jam</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <a href="{{ route('admin.bookings.index', ['sort' => 'created_at', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="flex items-center gap-1 hover:text-gray-700">
+                                Tgl Booking
+                                @if(request('sort') == 'created_at')
+                                    <span>{{ request('direction') == 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <a href="{{ route('admin.bookings.index', ['sort' => 'event_date', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="flex items-center gap-1 hover:text-gray-700">
+                                Tgl Event
+                                @if(request('sort', 'event_date') == 'event_date')
+                                    <span>{{ request('direction', 'desc') == 'asc' ? '↑' : '↓' }}</span>
+                                @endif
+                            </a>
+                        </th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Pelanggan</th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Paket</th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
@@ -26,7 +41,11 @@
                     @forelse($bookings as $booking)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-6">
-                            <div class="font-medium text-gray-900">{{ $booking->event_date->format('d M Y') }}</div>
+                            <div class="text-sm text-gray-900">{{ $booking->created_at->timezone('Asia/Makassar')->format('d M Y') }}</div>
+                            <div class="text-xs text-gray-500">{{ $booking->created_at->timezone('Asia/Makassar')->format('H:i') }} WITA</div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</div>
                             <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->event_time)->format('H:i') }} WITA</div>
                         </td>
                         <td class="py-4 px-6">
@@ -64,7 +83,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-gray-500">Belum ada data booking.</td>
+                        <td colspan="7" class="py-8 text-center text-gray-500">Belum ada data booking.</td>
                     </tr>
                     @endforelse
                 </tbody>

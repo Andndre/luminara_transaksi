@@ -120,7 +120,7 @@
                 </div>
 
                 <div class="flex items-center md:hidden">
-                    <button class="nav-item focus:outline-none">
+                    <button id="mobile-menu-btn" class="nav-item focus:outline-none p-2" aria-label="Toggle menu">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16"></path>
@@ -128,6 +128,18 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-xl transition-all duration-300 absolute w-full left-0 top-full">
+             <div class="px-4 pt-4 pb-6 space-y-3">
+                <a href="#home" class="block py-2 px-3 text-base font-medium text-gray-900 hover:bg-gray-50 hover:text-luminara-gold rounded-lg transition">BERANDA</a>
+                <a href="#features" class="block py-2 px-3 text-base font-medium text-gray-900 hover:bg-gray-50 hover:text-luminara-gold rounded-lg transition">KEUNGGULAN</a>
+                <a href="#pricing" class="block py-2 px-3 text-base font-medium text-gray-900 hover:bg-gray-50 hover:text-luminara-gold rounded-lg transition">HARGA</a>
+                <a href="{{ route('booking.create') }}" class="block w-full mt-4 text-center bg-luminara-gold text-white font-bold py-3 rounded-full hover:bg-yellow-600 transition shadow-md uppercase text-sm tracking-wide">
+                    Booking Sekarang
+                </a>
+             </div>
         </div>
     </nav>
 
@@ -419,6 +431,27 @@
                 </div>
 
             </div>
+
+            <div class="mt-16 text-center">
+                <a href="{{ route('pricelist') }}" class="group inline-flex flex-col items-center">
+                    <div class="inline-flex items-center gap-3 rounded-xl border-2 border-luminara-gold bg-white px-8 py-3.5 text-base font-bold text-luminara-gold shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-luminara-gold group-hover:text-white group-hover:shadow-luminara-gold/30">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                            </path>
+                        </svg>
+                        <span>Daftar Harga Lengkap & Detail Per Jam</span>
+                        <svg class="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </div>
+                    <p class="mt-3 text-xs font-medium text-gray-400 transition-colors group-hover:text-luminara-gold">
+                        Klik untuk melihat detail durasi 2 jam hingga 12 jam
+                    </p>
+                </a>
+            </div>
         </div>
     </section>
 
@@ -481,14 +514,34 @@
 
     <script>
         const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        function updateNavbar() {
+            if (window.scrollY > 50 || !mobileMenu.classList.contains('hidden')) {
                 navbar.classList.remove('nav-transparent');
                 navbar.classList.add('nav-scrolled');
             } else {
                 navbar.classList.add('nav-transparent');
                 navbar.classList.remove('nav-scrolled');
             }
+        }
+
+        window.addEventListener('scroll', updateNavbar);
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                updateNavbar();
+            });
+        }
+
+        // Close menu when clicking a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                updateNavbar();
+            });
         });
     </script>
 </body>
