@@ -18,7 +18,7 @@ class PackageSeeder extends Seeder
             [
                 'name' => 'Photobooth Unlimited Print',
                 'type' => 'pb_unlimited',
-                'description' => 'Cetak Sepuasnya Selama Sesi. Termasuk: Kamera DSLR Canon, Layar 22", Lighting Studio, Fun Props, & Softfile QR.',
+                'description' => 'Cetak Sepuasnya Selama Sesi. Termasuk: Kamera DSLR Canon, Layar 24", Lighting Studio, Fun Props, & Softfile QR.',
                 'base_price' => 2000000,
                 'prices' => [
                     2 => 2000000, 3 => 2500000, 4 => 3000000, 5 => 3500000, 
@@ -29,7 +29,7 @@ class PackageSeeder extends Seeder
             [
                 'name' => 'Photobooth Limited Print',
                 'type' => 'pb_limited',
-                'description' => 'Kuota Cetak Terbatas. Termasuk: Kamera DSLR Canon, Layar 22", Lighting Studio, Fun Props, & Softfile QR.',
+                'description' => 'Kuota Cetak Terbatas. Termasuk: Kamera DSLR Canon, Layar 24", Lighting Studio, Fun Props, & Softfile QR.',
                 'base_price' => 1300000,
                 'prices' => [
                     2 => ['price' => 1300000, 'desc' => '50 Print'],

@@ -86,7 +86,7 @@
         <section class="mb-16 bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             <div class="bg-gray-900 px-6 py-8 text-white text-center">
                 <h2 class="font-serif text-2xl md:text-3xl font-bold text-luminara-gold mb-2">📸 Photo Booth Packages</h2>
-                <p class="text-gray-400 text-xs md:text-sm">Include: Kamera DSLR Canon, Layar 22", Lighting Studio, Fun Props, & Softfile QR.</p>
+                <p class="text-gray-400 text-xs md:text-sm">Include: Kamera DSLR Canon, Layar 24", Lighting Studio, Fun Props, & Softfile QR.</p>
             </div>
             
             <div class="overflow-x-auto">

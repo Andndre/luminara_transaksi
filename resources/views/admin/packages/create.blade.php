@@ -130,7 +130,7 @@
                     },
                     'pb_limited': {
                         name: 'Limited Print', type: 'pb_limited', base_price: 1300000,
-                        description: 'Kuota Cetak Terbatas. Termasuk: Kamera DSLR, Layar 22", Lighting, Props.',
+                        description: 'Kuota Cetak Terbatas. Termasuk: Kamera DSLR, Layar 24", Lighting, Props.',
                         prices: [
                             {duration: 2, price: 1300000, description: '50 Print'}, {duration: 3, price: 1600000, description: '80 Print'},
                             {duration: 4, price: 1800000, description: '100 Print'}, {duration: 5, price: 2500000, description: '200 Print'},
@@ -142,7 +142,7 @@
                     },
                     'pb_unlimited': {
                         name: 'Unlimited Print', type: 'pb_unlimited', base_price: 2000000,
-                        description: 'Cetak Sepuasnya. Termasuk: Kamera DSLR, Layar 22", Lighting, Props.',
+                        description: 'Cetak Sepuasnya. Termasuk: Kamera DSLR, Layar 24", Lighting, Props.',
                         prices: [
                             {duration: 2, price: 2000000}, {duration: 3, price: 2500000}, {duration: 4, price: 3000000},
                             {duration: 5, price: 3500000}, {duration: 6, price: 4000000}, {duration: 7, price: 4500000},

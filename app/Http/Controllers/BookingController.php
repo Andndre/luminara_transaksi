@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\BlockedDate;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
@@ -141,6 +143,7 @@ class BookingController extends Controller
             'package_type' => $request->package_type,
             'duration_hours' => $request->duration_hours,
             'price_total' => $request->price_total,
+            'dp_amount' => $request->dp_amount ?? 0,
             'payment_type' => $proofPath ? 'DP_TRANSFER' : 'NONE',
             'payment_proof' => $proofPath,
             'event_date' => $request->event_date,
@@ -154,6 +157,58 @@ class BookingController extends Controller
             'notes' => $request->notes,
             'status' => $initialStatus,
         ]);
+
+        // Auto-create Invoice
+        try {
+            $invNumber = 'INV/' . now()->format('Y/m') . '/' . str_pad($booking->id, 4, '0', STR_PAD_LEFT);
+            $dpAmount = $booking->dp_amount ?? 0;
+            $balanceDue = $booking->price_total - $dpAmount;
+            
+            $invoice = Invoice::create([
+                'booking_id' => $booking->id,
+                'invoice_number' => $invNumber,
+                'invoice_date' => now(),
+                'customer_name' => $booking->customer_name,
+                'customer_phone' => $booking->customer_phone,
+                'customer_email' => $booking->customer_email,
+                'subtotal' => $booking->price_total,
+                'grand_total' => $balanceDue, // Invoice total usually reflects what is to be paid? No, grand_total is total price + tax - discount.
+                // Wait, InvoiceController::show uses: 'grand_total' => $booking->price_total - ($booking->dp_amount ?? 0)
+                // That seems wrong. Grand Total should be the Total Amount of the transaction. Balance Due is what is left.
+                // However, I must follow the convention used in InvoiceController::show to be consistent.
+                // In InvoiceController::show:
+                // 'subtotal' => $booking->price_total,
+                // 'grand_total' => $booking->price_total - ($booking->dp_amount ?? 0),
+                // 'balance_due' => $booking->price_total - ($booking->dp_amount ?? 0),
+                // This implies Grand Total IS the Balance Due in the initial creation logic if DP is deducted?
+                // Let's look at edit.blade.php javascript:
+                // grand_total = afterDiscount + tax_amount
+                // balance_due = grand_total - dp_amount
+                // So Grand Total SHOULD be the full amount.
+                // The logic in InvoiceController::show might be slightly off or I misread it.
+                // "grand_total" => $booking->price_total - ...
+                // If I have a 1M booking, DP 200k.
+                // Subtotal: 1M. Grand Total: 1M. DP: 200k. Balance: 800k.
+                // Let's use THAT logic which is standard.
+                // So:
+                'grand_total' => $booking->price_total, // Assuming no tax/discount initially
+                'dp_amount' => $dpAmount,
+                'balance_due' => $balanceDue,
+                'status' => $balanceDue <= 0 ? 'PAID' : ($dpAmount > 0 ? 'PARTIAL' : 'UNPAID'),
+            ]);
+
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'description' => $booking->package_name . ' (' . $booking->duration_hours . ' Jam)',
+                'quantity' => 1,
+                'price' => $booking->price_total,
+                'total' => $booking->price_total,
+            ]);
+        } catch (\Exception $e) {
+            // Log error but don't fail booking? Or fail?
+            // For now silent fail or log is better than crashing user experience, but consistency is key.
+            \Illuminate\Support\Facades\Log::error('Failed to create invoice for booking ' . $booking->id . ': ' . $e->getMessage());
+        }
 
         $mapsInfo = $booking->event_maps_link ? "\nMaps: {$booking->event_maps_link}" : "";
 
@@ -270,7 +325,7 @@ class BookingController extends Controller
         $user = auth()->user();
         $businessUnit = ($user->division === 'super_admin') ? $package->business_unit : $user->division;
 
-        Booking::create([
+        $booking = Booking::create([
             'customer_name' => $request->customer_name,
             'customer_phone' => $request->customer_phone,
             'event_date' => $request->event_date,
@@ -285,6 +340,38 @@ class BookingController extends Controller
             'payment_type' => 'MANUAL_ADMIN',
             'notes' => $request->notes,
         ]);
+
+        // Auto-create Invoice for Admin Booking
+        try {
+            $invNumber = 'INV/' . now()->format('Y/m') . '/' . str_pad($booking->id, 4, '0', STR_PAD_LEFT);
+            // Admin created bookings have 0 DP initially usually
+            $dpAmount = 0; 
+            $balanceDue = $request->price_total;
+
+            $invoice = Invoice::create([
+                'booking_id' => $booking->id,
+                'invoice_number' => $invNumber,
+                'invoice_date' => now(),
+                'customer_name' => $request->customer_name,
+                'customer_phone' => $request->customer_phone,
+                // 'customer_email' => ... admin form doesn't have email?
+                'subtotal' => $request->price_total,
+                'grand_total' => $request->price_total,
+                'dp_amount' => $dpAmount,
+                'balance_due' => $balanceDue,
+                'status' => 'UNPAID',
+            ]);
+
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'description' => $package->name . ' (' . $request->duration_hours . ' Jam)',
+                'quantity' => 1,
+                'price' => $request->price_total,
+                'total' => $request->price_total,
+            ]);
+        } catch (\Exception $e) {
+             \Illuminate\Support\Facades\Log::error('Failed to create invoice for admin booking ' . $booking->id . ': ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.bookings.index')->with('success', 'Booking manual berhasil dibuat.');
     }

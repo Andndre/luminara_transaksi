@@ -228,7 +228,7 @@
                             </path>
                         </svg>
                     </div>
-                    <h3 class="mb-2 text-lg font-bold">Layar Live View 22"</h3>
+                    <h3 class="mb-2 text-lg font-bold">Layar Live View 24"</h3>
                     <p class="text-sm text-gray-500">Monitoring real-time dengan layar besar agar gaya lebih maksimal.
                     </p>
                 </div>
@@ -505,7 +505,7 @@
                                 class="hover:text-luminara-gold">@luminara_photobooth</a></li>
                         <li>Instagram: <a href="https://instagram.com/luminara_visual"
                                 class="hover:text-luminara-gold">@luminara_visual</a></li>
-                        <li>Lokasi: Denpasar, Bali</li>
+                        <li>Lokasi: Karangasem, Bali</li>
                     </ul>
                 </div>
                 <div>

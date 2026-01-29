@@ -23,9 +23,17 @@
             </div>
             @endif
 
-            <div>
+            <div x-data="{ imagePreview: null }">
                 <label class="block text-sm font-medium text-gray-700 mb-1">File Foto</label>
-                <input type="file" name="image" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-yellow-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100" required>
+                <input type="file" name="image" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-yellow-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100" required 
+                    @change="const file = $event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => { imagePreview = e.target.result }; reader.readAsDataURL(file); }">
+                
+                <template x-if="imagePreview">
+                    <div class="mt-4">
+                        <p class="text-xs text-gray-500 mb-2">Preview:</p>
+                        <img :src="imagePreview" class="max-w-xs h-auto rounded-lg shadow-md border border-gray-200">
+                    </div>
+                </template>
                 <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, WebP. Maksimal 5MB.</p>
             </div>
 

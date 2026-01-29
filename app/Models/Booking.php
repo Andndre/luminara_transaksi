@@ -18,6 +18,7 @@ class Booking extends Model
     protected $casts = [
         'event_date' => 'date',
         'price_total' => 'decimal:2',
+        'dp_amount' => 'decimal:2',
         'duration_hours' => 'integer',
     ];
 
@@ -26,4 +27,9 @@ class Booking extends Model
     const STATUS_DP_DIBAYAR = 'DP_DIBAYAR';
     const STATUS_LUNAS = 'LUNAS';
     const STATUS_DIBATALKAN = 'DIBATALKAN';
+
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class);
+    }
 }

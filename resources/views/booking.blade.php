@@ -203,6 +203,18 @@
                                         <input type="hidden" name="price_total" id="price_total" value="0">
                                     </div>
                                 </div>
+
+                                <div>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Jumlah DP (Opsional)</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-500">Rp</span>
+                                        <input type="text" id="display_dp" 
+                                            class="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-sm font-bold text-gray-900 md:text-base focus:ring-luminara-gold focus:border-luminara-gold"
+                                            placeholder="0" oninput="formatRupiah(this, 'dp_amount')">
+                                        <input type="hidden" name="dp_amount" id="dp_amount" value="0">
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-1">Isi jika Anda sudah melakukan transfer DP.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -520,6 +532,25 @@
 
             document.getElementById('price_total').value = total;
             document.getElementById('display_price').value = new Intl.NumberFormat('id-ID').format(total);
+        }
+
+        function formatRupiah(element, targetId) {
+            let value = element.value.replace(/[^,\d]/g, '').toString();
+            let split = value.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            element.value = rupiah;
+            
+            // Update hidden input with numeric value only
+            document.getElementById(targetId).value = value;
         }
 
         // Initialize Flatpickr
