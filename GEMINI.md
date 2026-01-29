@@ -99,10 +99,15 @@ composer test
     *   Admins can block/unblock dates and manage booking statuses.
     *   Availability check is implemented to prevent double booking.
     *   **Auto-Invoice**: New bookings automatically generate a corresponding invoice.
+    *   **Payment Status Feedback**: The booking form provides real-time visual feedback (checkmark and text) indicating whether the payment is a Down Payment (DP) or Full Payment (Lunas).
+    *   **AJAX Workflow**: Public booking form uses `fetch` (AJAX) for submission to provide a seamless UX with loading states and success popups.
 *   **Invoice Management**:
     *   **CRUD**: Create (manual/auto), Read (List/Detail), Update, Delete.
     *   **Printing**: Direct "silent" printing via hidden iframe or standard window print. Supports PDF generation context.
     *   **Calculations**: Auto-calculation of subtotals, discounts (fixed/percent), tax, and balance due (DP handling).
+*   **WhatsApp Integration**: 
+    *   Booking details are forwarded to WhatsApp. 
+    *   Messages dynamically reflect the payment status (**DP** vs **Lunas**) and the specific amount paid.
 *   **Styling**: Uses Tailwind CSS v4 managed by Vite.
-*   **Admin UI**: SweetAlert2 used for critical confirmations (e.g., deletions).
+*   **UX Components**: **SweetAlert2** is integrated throughout the system for form submission feedback, success notifications, and critical confirmations (e.g., deletions).
 *   **API Design**: RESTful API design for transaction management, primarily serving the Flutter mobile client.

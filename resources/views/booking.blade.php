@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .flatpickr-day.selected {
             background: #D4AF37 !important;
@@ -203,18 +205,6 @@
                                         <input type="hidden" name="price_total" id="price_total" value="0">
                                     </div>
                                 </div>
-
-                                <div>
-                                    <label class="mb-2 block text-sm font-medium text-gray-700">Jumlah DP (Opsional)</label>
-                                    <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-500">Rp</span>
-                                        <input type="text" id="display_dp" 
-                                            class="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-sm font-bold text-gray-900 md:text-base focus:ring-luminara-gold focus:border-luminara-gold"
-                                            placeholder="0" oninput="formatRupiah(this, 'dp_amount')">
-                                        <input type="hidden" name="dp_amount" id="dp_amount" value="0">
-                                    </div>
-                                    <p class="text-[10px] text-gray-500 mt-1">Isi jika Anda sudah melakukan transfer DP.</p>
-                                </div>
                             </div>
                         </div>
 
@@ -350,6 +340,23 @@
                                 Nomor rekening disalin!
                             </div>
 
+                            <div class="mb-6">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Jumlah Uang DP / Pelunasan</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 font-bold text-gray-500">Rp</span>
+                                    <input type="text" id="display_dp"
+                                        class="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-10 text-sm font-bold text-gray-900 md:text-base focus:ring-luminara-gold focus:border-luminara-gold"
+                                        placeholder="0" oninput="formatRupiah(this, 'dp_amount'); checkPaymentStatus()">
+                                    <input type="hidden" name="dp_amount" id="dp_amount" value="0">
+
+                                    <!-- Green Checkmark Indicator -->
+                                    <div id="payment-check" class="hidden absolute inset-y-0 right-0 flex items-center pr-3 text-green-500">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-gray-500 mt-1" id="payment-status-text">Masukkan jumlah yang ditransfer (DP Minimal 500rb atau Pelunasan).</p>
+                            </div>
+
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer DP <span class="text-gray-400 font-normal">(Opsional)</span></label>
                                 <div class="relative group">
@@ -362,13 +369,13 @@
                         <div class="pt-6">
                             <button type="submit"
                                 class="bg-luminara-gold w-full transform rounded-xl py-4 text-lg font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-yellow-600">
-                                Konfirmasi via WhatsApp
+                                Konfirmasi
                             </button>
                             <div id="package-error" class="hidden mt-2 text-center text-sm text-red-600 font-bold animate-bounce">
                                 Silakan pilih salah satu paket terlebih dahulu!
                             </div>
                             <p class="mt-4 text-center text-xs text-gray-500">
-                                Pesanan akan diteruskan ke WhatsApp Admin untuk validasi jadwal dan pembayaran DP.
+                                Pesanan akan diteruskan ke WhatsApp Admin untuk validasi jadwal dan pembayaran.
                             </p>
                         </div>
                     </form>
@@ -420,14 +427,77 @@
             @endforeach
         };
 
-        // Validation for Form Submit
-        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        // Validation and AJAX Submit for Form
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
             const packageName = document.getElementById('package_name').value;
             if (!packageName) {
-                e.preventDefault();
                 const errorDiv = document.getElementById('package-error');
                 errorDiv.classList.remove('hidden');
-                document.querySelector('[name="2. Pilih Paket"]').scrollIntoView({ behavior: 'smooth' });
+                document.querySelector('h2').scrollIntoView({ behavior: 'smooth' }); // Scroll to Package section
+                return;
+            }
+
+            // Show Loading
+            Swal.fire({
+                title: 'Memproses Pesanan...',
+                text: 'Mohon tunggu sebentar data Anda sedang kami simpan.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Booking Berhasil!',
+                        text: 'Data Anda telah tersimpan. Silakan klik tombol di bawah untuk konfirmasi akhir melalui WhatsApp.',
+                        icon: 'success',
+                        confirmButtonColor: '#D4AF37',
+                        confirmButtonText: 'Lanjut ke WhatsApp',
+                        allowOutsideClick: false
+                    }).then((btn) => {
+                        if (btn.isConfirmed) {
+                            window.location.href = result.wa_url;
+                        }
+                    });
+                } else {
+                    // Handle Validation Errors
+                    let errorMessages = '';
+                    if (result.errors) {
+                        errorMessages = Object.values(result.errors).flat().join('<br>');
+                    } else {
+                        errorMessages = result.message || 'Terjadi kesalahan saat menyimpan data.';
+                    }
+
+                    Swal.fire({
+                        title: 'Oops!',
+                        html: errorMessages,
+                        icon: 'error',
+                        confirmButtonColor: '#D4AF37'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Kesalahan Sistem',
+                    text: 'Gagal terhubung ke server. Silakan coba lagi.',
+                    icon: 'error',
+                    confirmButtonColor: '#D4AF37'
+                });
             }
         });
 
@@ -474,7 +544,7 @@
         function updatePackage(name, type, price) {
             document.getElementById('package_name').value = name;
             document.getElementById('package_type').value = type;
-            
+
             // Get base price from object to be safe, though passed in param
             if(availablePackages[type]) {
                 basePrice = availablePackages[type].base;
@@ -489,12 +559,12 @@
         function updateDurationOptions(type) {
             const select = document.getElementById('duration_hours');
             const currentVal = parseInt(select.value) || 2;
-            
+
             select.innerHTML = ''; // Clear options
 
             if (availablePackages[type] && availablePackages[type].prices) {
                 const durations = Object.keys(availablePackages[type].prices).map(Number).sort((a,b) => a-b);
-                
+
                 durations.forEach(hours => {
                     const option = document.createElement('option');
                     option.value = hours;
@@ -532,6 +602,7 @@
 
             document.getElementById('price_total').value = total;
             document.getElementById('display_price').value = new Intl.NumberFormat('id-ID').format(total);
+            checkPaymentStatus();
         }
 
         function formatRupiah(element, targetId) {
@@ -548,9 +619,36 @@
 
             rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
             element.value = rupiah;
-            
+
             // Update hidden input with numeric value only
             document.getElementById(targetId).value = value;
+        }
+
+        function checkPaymentStatus() {
+            const totalPrice = parseInt(document.getElementById('price_total').value) || 0;
+            const inputAmount = parseInt(document.getElementById('dp_amount').value) || 0;
+            const checkIcon = document.getElementById('payment-check');
+            const statusText = document.getElementById('payment-status-text');
+
+            if (totalPrice > 0 && inputAmount >= totalPrice) {
+                // Lunas
+                checkIcon.classList.remove('hidden');
+                statusText.textContent = "Status: LUNAS (Pembayaran Penuh)";
+                statusText.classList.add('text-green-600', 'font-bold');
+                statusText.classList.remove('text-gray-500');
+            } else if (inputAmount > 0) {
+                // DP
+                checkIcon.classList.add('hidden');
+                statusText.textContent = "Status: DP DIBAYAR (Belum Lunas)";
+                statusText.classList.remove('text-green-600', 'font-bold', 'text-gray-500');
+                statusText.classList.add('text-yellow-600', 'font-bold');
+            } else {
+                // Empty
+                checkIcon.classList.add('hidden');
+                statusText.textContent = "Masukkan jumlah yang ditransfer (DP Minimal 500rb atau Pelunasan).";
+                statusText.classList.remove('text-green-600', 'font-bold', 'text-yellow-600');
+                statusText.classList.add('text-gray-500');
+            }
         }
 
         // Initialize Flatpickr
@@ -577,7 +675,7 @@
                         // Check if date is blocked or full (Using local date components to avoid UTC shift)
                         const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
                         const dateStr = offsetDate.toISOString().slice(0, 10);
-                        
+
                         const data = availabilityData.find(item => item.date === dateStr);
                         if (data) {
                             return data.is_blocked || data.booking_count >= data.max_booking;
@@ -589,7 +687,7 @@
                     const date = dayElem.dateObj;
                     const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
                     const dateStr = offsetDate.toISOString().slice(0, 10);
-                    
+
                     const data = availabilityData.find(item => item.date === dateStr);
 
                     if (data) {

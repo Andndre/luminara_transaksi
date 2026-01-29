@@ -126,12 +126,23 @@ class BookingController extends Controller
         // Handle File Upload & Status
         $proofPath = null;
         $initialStatus = Booking::STATUS_PENDING;
-        $waPaymentMsg = "Saya belum melakukan pembayaran DP.";
+        $waPaymentMsg = "Saya belum melakukan pembayaran.";
 
         if ($request->hasFile('payment_proof')) {
             $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
-            $initialStatus = Booking::STATUS_DP_DIBAYAR;
-            $waPaymentMsg = "Bukti pembayaran DP sudah diupload ke sistem.";
+            
+            $amountPaid = $request->dp_amount ?? 0;
+            $total = $request->price_total;
+            
+            if ($amountPaid >= $total) {
+                $initialStatus = Booking::STATUS_LUNAS; // Or whatever status represents Paid
+                $statusPay = "LUNAS (Full Payment)";
+            } else {
+                $initialStatus = Booking::STATUS_DP_DIBAYAR;
+                $statusPay = "DP (Down Payment)";
+            }
+            
+            $waPaymentMsg = "Bukti pembayaran *{$statusPay}* sebesar *Rp " . number_format($amountPaid, 0, ',', '.') . "* sudah diupload ke sistem.";
         }
 
         $package = \App\Models\Package::where('type', $request->package_type)->first();
@@ -228,6 +239,14 @@ class BookingController extends Controller
         $encodedMessage = urlencode($message);
         $adminPhone = '6287788986136';
         $waUrl = "https://wa.me/{$adminPhone}?text={$encodedMessage}";
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking saved successfully.',
+                'wa_url' => $waUrl
+            ]);
+        }
 
         return redirect()->away($waUrl);
     }
