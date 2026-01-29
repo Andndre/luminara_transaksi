@@ -30,7 +30,10 @@ class BookingController extends Controller
 
         // Get blocked dates
         $blocked = BlockedDate::whereBetween('date', [$start, $end])
-            ->pluck('date')
+            ->get()
+            ->map(function ($item) {
+                return $item->date->format('Y-m-d');
+            })
             ->toArray();
 
         // Get booking counts per date

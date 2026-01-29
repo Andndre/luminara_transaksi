@@ -47,7 +47,7 @@
                         @forelse($blockedDates as $blocked)
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 font-medium text-gray-900">
-                                    {{ $blocked->date->format('d M Y') }}
+                                    {{ $blocked->date->format('d/m/Y') }}
                                     <span class="text-gray-400 text-xs block">{{ $blocked->date->format('l') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-gray-600">{{ $blocked->reason ?? '-' }}</td>

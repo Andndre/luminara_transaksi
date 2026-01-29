@@ -41,11 +41,11 @@
                     @forelse($bookings as $booking)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-6">
-                            <div class="text-sm text-gray-900">{{ $booking->created_at->timezone('Asia/Makassar')->format('d M Y') }}</div>
+                            <div class="text-sm text-gray-900">{{ $booking->created_at->timezone('Asia/Makassar')->format('d/m/Y') }}</div>
                             <div class="text-xs text-gray-500">{{ $booking->created_at->timezone('Asia/Makassar')->format('H:i') }} WITA</div>
                         </td>
                         <td class="py-4 px-6">
-                            <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</div>
+                            <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->event_date)->format('d/m/Y') }}</div>
                             <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->event_time)->format('H:i') }} WITA</div>
                         </td>
                         <td class="py-4 px-6">

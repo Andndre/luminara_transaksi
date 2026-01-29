@@ -60,7 +60,7 @@
                 <tbody class="text-sm">
                     @forelse($upcomingEvents as $event)
                         <tr class="hover:bg-gray-50 border-b border-gray-50 last:border-0 transition">
-                            <td class="py-4 px-4 font-medium text-gray-900">{{ $event->event_date->format('d M Y') }}</td>
+                            <td class="py-4 px-4 font-medium text-gray-900">{{ $event->event_date->format('d/m/Y') }}</td>
                             <td class="py-4 px-4 text-gray-600">{{ \Carbon\Carbon::parse($event->event_time)->format('H:i') }} WITA</td>
                             <td class="py-4 px-4 text-gray-900 font-medium">{{ $event->customer_name }}</td>
                             <td class="py-4 px-4 text-gray-600">{{ $event->package_name }}</td>
