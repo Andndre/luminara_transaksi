@@ -1,0 +1,101 @@
+@extends('layouts.admin')
+
+@section('content')
+    <div class="mb-8">
+        <a href="{{ route('admin.bookings.index') }}" class="text-gray-500 hover:text-gray-900 text-sm mb-4 inline-block">&larr; Kembali</a>
+        <h1 class="text-3xl font-bold text-gray-900">Edit Booking</h1>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden max-w-4xl">
+        <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST" class="p-8 space-y-6">
+            @csrf
+            @method('PUT')
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Customer Info -->
+                <div class="md:col-span-2 border-b pb-4 mb-2">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Informasi Pelanggan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pelanggan</label>
+                            <input type="text" name="customer_name" value="{{ old('customer_name', $booking->customer_name) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
+                            <input type="text" name="customer_phone" value="{{ old('customer_phone', $booking->customer_phone) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Info -->
+                <div class="md:col-span-2 border-b pb-4 mb-2">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Detail Acara</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Event</label>
+                            <input type="date" name="event_date" value="{{ old('event_date', $booking->event_date->format('Y-m-d')) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jam Mulai</label>
+                            <input type="time" name="event_time" value="{{ old('event_time', \Carbon\Carbon::parse($booking->event_time)->format('H:i')) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Durasi (Jam)</label>
+                            <input type="number" name="duration_hours" value="{{ old('duration_hours', $booking->duration_hours) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Info -->
+                <div class="md:col-span-2 border-b pb-4 mb-2">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Paket & Harga</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Paket</label>
+                            <select name="package_type" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500">
+                                @foreach($packages as $pkg)
+                                    <option value="{{ $pkg->type }}" {{ $booking->package_type == $pkg->type ? 'selected' : '' }}>
+                                        {{ $pkg->name }}
+                                    </option>
+                                @endforeach
+                                <!-- Fallback if current package is not in list (e.g. deleted/inactive) -->
+                                @if(!$packages->contains('type', $booking->package_type))
+                                    <option value="{{ $booking->package_type }}" selected>{{ $booking->package_name }} (Legacy)</option>
+                                @endif
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Harga (Rp)</label>
+                            <input type="number" name="price_total" value="{{ old('price_total', $booking->price_total) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status & Notes -->
+                <div class="md:col-span-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status Pembayaran</label>
+                            <select name="status" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500">
+                                <option value="PENDING" {{ $booking->status == 'PENDING' ? 'selected' : '' }}>PENDING</option>
+                                <option value="DP_DIBAYAR" {{ $booking->status == 'DP_DIBAYAR' ? 'selected' : '' }}>DP DIBAYAR</option>
+                                <option value="LUNAS" {{ $booking->status == 'LUNAS' ? 'selected' : '' }}>LUNAS</option>
+                                <option value="DIBATALKAN" {{ $booking->status == 'DIBATALKAN' ? 'selected' : '' }}>DIBATALKAN</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Tambahan</label>
+                            <textarea name="notes" rows="2" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500">{{ old('notes', $booking->notes) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t flex justify-end">
+                <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-xl shadow-lg transition">
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+@endsection

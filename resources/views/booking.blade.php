@@ -91,8 +91,7 @@
                 </a>
                 <a href="{{ route('home') }}"
                     class="hover:text-luminara-gold flex items-center gap-1 text-xs font-medium text-gray-500 md:text-sm">
-                    <span>&larr;</span> <span class="hidden md:inline">Kembali ke Beranda</span><span
-                        class="md:hidden">Beranda</span>
+                    <span>&larr;</span> <span class="hidden sm:inline">Kembali ke Beranda</span><span class="sm:hidden">Beranda</span>
                 </a>
             </div>
         </div>
@@ -159,118 +158,26 @@
                                     <label class="mb-2 block text-sm font-medium text-gray-700">Tipe Paket</label>
                                     <div class="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
 
-                                        <!-- Photobooth Unlimited Print -->
+                                        @foreach($packages as $pkg)
                                         <label class="group relative cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="pb_unlimited"
+                                            <input type="radio" name="package_type_select" value="{{ $pkg->type }}"
                                                 class="peer sr-only" required
-                                                onchange="updatePackage('Photobooth Unlimited Print', 'pb_unlimited', 2000000)">
+                                                onchange="updatePackage('{{ $pkg->name }}', '{{ $pkg->type }}', {{ $pkg->base_price }})">
                                             <div
                                                 class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
+                                                @if(str_contains(strtolower($pkg->name), 'combo'))
+                                                    <div class="bg-luminara-gold absolute right-0 top-0 rounded-bl-lg px-2 py-0.5 text-[10px] font-bold text-white">BEST VALUE</div>
+                                                @endif
                                                 <div>
-                                                    <div class="font-bold text-gray-900">Photobooth Unlimited Print
-                                                    </div>
-                                                    <div class="mt-1 text-xs text-gray-500">Cetak Sepuasnya Selama Sesi
-                                                    </div>
+                                                    <div class="font-bold text-gray-900">{{ $pkg->name }}</div>
+                                                    <div class="mt-1 text-xs text-gray-500">{{ Str::limit($pkg->description, 50) }}</div>
                                                 </div>
                                                 <div
                                                     class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
-                                                    Rp 2.000k / 2 jam</div>
+                                                    Rp {{ number_format($pkg->base_price/1000, 0) }}k / 2 jam</div>
                                             </div>
                                         </label>
-
-                                        <!-- Photobooth Limited Print -->
-                                        <label class="group relative cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="pb_limited"
-                                                class="peer sr-only" required
-                                                onchange="updatePackage('Photobooth Limited Print', 'pb_limited', 1300000)">
-                                            <div
-                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
-                                                <div>
-                                                    <div class="font-bold text-gray-900">Photobooth Limited Print</div>
-                                                    <div class="mt-1 text-xs text-gray-500">Kuota Cetak 50 - 900 Lembar
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
-                                                    Rp 1.300k / 2 jam</div>
-                                            </div>
-                                        </label>
-
-                                        <!-- Photobooth Unlimited File Only -->
-                                        <label class="group relative cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="pb_file"
-                                                class="peer sr-only" required
-                                                onchange="updatePackage('Photobooth Unlimited File Only', 'pb_file', 1000000)">
-                                            <div
-                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
-                                                <div>
-                                                    <div class="font-bold text-gray-900">Photobooth Unlimited File Only
-                                                    </div>
-                                                    <div class="mt-1 text-xs text-gray-500">Hanya Softcopy (QR Download)
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
-                                                    Rp 1.000k / 2 jam</div>
-                                            </div>
-                                        </label>
-
-                                        <!-- Videobooth 360 -->
-                                        <label class="group relative cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="videobooth360"
-                                                class="peer sr-only" required
-                                                onchange="updatePackage('Videobooth 360', 'videobooth360', 2000000)">
-                                            <div
-                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
-                                                <div>
-                                                    <div class="font-bold text-gray-900">Videobooth 360</div>
-                                                    <div class="mt-1 text-xs text-gray-500">Unlimited Slowmo & Rewind
-                                                        Video</div>
-                                                </div>
-                                                <div
-                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
-                                                    Rp 2.000k / 2 jam</div>
-                                            </div>
-                                        </label>
-
-                                        <!-- Combo Package Print -->
-                                        <label class="group relative cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="combo_unlimited"
-                                                class="peer sr-only" required
-                                                onchange="updatePackage('Combo Package Print', 'combo_unlimited', 3950000)">
-                                            <div
-                                                class="border-luminara-gold/40 hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 bg-yellow-50/10 p-4 text-center transition peer-checked:bg-yellow-50">
-                                                <div
-                                                    class="bg-luminara-gold absolute right-0 top-0 rounded-bl-lg px-2 py-0.5 text-[10px] font-bold text-white">
-                                                    BEST VALUE</div>
-                                                <div>
-                                                    <div class="font-bold text-gray-900">Combo Package Print</div>
-                                                    <div class="mt-1 text-xs text-gray-500">Unlimited Print & Video 360
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
-                                                    Rp 3.950k / 2 jam</div>
-                                            </div>
-                                        </label>
-
-                                        <!-- Combo File Only -->
-                                        <label class="group relative cursor-pointer">
-                                            <input type="radio" name="package_type_select" value="combo_file"
-                                                class="peer sr-only" required
-                                                onchange="updatePackage('Combo File Only', 'combo_file', 2800000)">
-                                            <div
-                                                class="hover:border-luminara-gold peer-checked:border-luminara-gold flex h-full flex-col justify-between rounded-xl border-2 border-gray-200 p-4 text-center transition peer-checked:bg-yellow-50">
-                                                <div>
-                                                    <div class="font-bold text-gray-900">Combo File Only</div>
-                                                    <div class="mt-1 text-xs text-gray-500">Unlimited Photobooth &
-                                                        Video 360</div>
-                                                </div>
-                                                <div
-                                                    class="text-luminara-gold mt-2 rounded bg-yellow-100/50 py-1.5 text-xs font-bold">
-                                                    Rp 2.800k / 2 jam</div>
-                                            </div>
-                                        </label>
+                                        @endforeach
 
                                     </div>
                                     <input type="hidden" name="package_name" id="package_name">
@@ -282,10 +189,6 @@
                                     <select name="duration_hours" id="duration_hours" onchange="calculateTotal()"
                                         class="focus:ring-luminara-gold focus:border-luminara-gold w-full rounded-xl border border-gray-300 px-4 py-3 text-sm md:text-base">
                                         <option value="2">2 Jam (Min)</option>
-                                        <option value="3">3 Jam</option>
-                                        <option value="4">4 Jam</option>
-                                        <option value="5">5 Jam</option>
-                                        <option value="6">6 Jam</option>
                                     </select>
                                 </div>
 
@@ -490,6 +393,21 @@
         let basePrice = 0;
         let availabilityData = [];
 
+        // Build packages object from Backend
+        const availablePackages = {
+            @foreach($packages as $pkg)
+            '{{ $pkg->type }}': {
+                name: '{{ $pkg->name }}',
+                base: {{ $pkg->base_price }},
+                prices: {
+                    @foreach($pkg->prices as $price)
+                        {{ $price->duration_hours }}: {{ $price->price }},
+                    @endforeach
+                }
+            },
+            @endforeach
+        };
+
         // Validation for Form Submit
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
             const packageName = document.getElementById('package_name').value;
@@ -503,15 +421,12 @@
 
         function copyToClipboard(text) {
             if (navigator.clipboard && window.isSecureContext) {
-                // Secure context (HTTPS/Localhost)
                 navigator.clipboard.writeText(text).then(() => {
                     showToast();
                 }).catch(err => {
-                    console.error('Failed to copy: ', err);
                     fallbackCopyTextToClipboard(text);
                 });
             } else {
-                // Non-secure context fallback
                 fallbackCopyTextToClipboard(text);
             }
         }
@@ -519,12 +434,9 @@
         function fallbackCopyTextToClipboard(text) {
             var textArea = document.createElement("textarea");
             textArea.value = text;
-
-            // Ensure textarea is not visible but part of DOM
             textArea.style.top = "0";
             textArea.style.left = "0";
             textArea.style.position = "fixed";
-
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
@@ -547,44 +459,16 @@
             }, 2000);
         }
 
-        // Pricing Rules based on Pricelist
-        const packageRates = {
-            'pb_unlimited': {
-                hourly: 700000,
-                base: 2000000,
-                maxDuration: 12
-            },
-            'pb_limited': {
-                hourly: 300000,
-                base: 1300000,
-                maxDuration: 12
-            },
-            'pb_file': {
-                hourly: 300000,
-                base: 1000000,
-                maxDuration: 12
-            },
-            'videobooth360': {
-                hourly: 600000,
-                base: 2000000,
-                maxDuration: 8
-            },
-            'combo_unlimited': {
-                hourly: 1200000,
-                base: 3950000,
-                maxDuration: 10
-            },
-            'combo_file': {
-                hourly: 900000,
-                base: 2800000,
-                maxDuration: 10
-            }
-        };
-
         function updatePackage(name, type, price) {
             document.getElementById('package_name').value = name;
             document.getElementById('package_type').value = type;
-            basePrice = price;
+            
+            // Get base price from object to be safe, though passed in param
+            if(availablePackages[type]) {
+                basePrice = availablePackages[type].base;
+            } else {
+                basePrice = price;
+            }
 
             updateDurationOptions(type);
             calculateTotal();
@@ -593,22 +477,31 @@
         function updateDurationOptions(type) {
             const select = document.getElementById('duration_hours');
             const currentVal = parseInt(select.value) || 2;
-            const max = packageRates[type] ? packageRates[type].maxDuration : 5;
-
+            
             select.innerHTML = ''; // Clear options
 
-            for (let i = 2; i <= max; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.text = i + ' Jam' + (i === 2 ? ' (Min)' : '');
-                select.appendChild(option);
-            }
+            if (availablePackages[type] && availablePackages[type].prices) {
+                const durations = Object.keys(availablePackages[type].prices).map(Number).sort((a,b) => a-b);
+                
+                durations.forEach(hours => {
+                    const option = document.createElement('option');
+                    option.value = hours;
+                    option.text = hours + ' Jam' + (hours === Math.min(...durations) ? ' (Min)' : '');
+                    select.appendChild(option);
+                });
 
-            // Restore selection if valid, else set to min (2)
-            if (currentVal <= max) {
-                select.value = currentVal;
+                // Restore selection if valid, else set to min
+                if (durations.includes(currentVal)) {
+                    select.value = currentVal;
+                } else {
+                    select.value = durations[0]; // min duration
+                }
             } else {
-                select.value = 2;
+                // Fallback default
+                const option = document.createElement('option');
+                option.value = 2;
+                option.text = "2 Jam";
+                select.appendChild(option);
             }
         }
 
@@ -617,17 +510,11 @@
             const type = document.getElementById('package_type').value;
             let total = 0;
 
-            if (type && packageRates[type]) {
-                let extraHours = Math.max(0, duration - 2);
-                let hourlyRate = packageRates[type].hourly;
-
-                // Refined estimation logic for Combo Unlimited steps
-                if (type === 'combo_unlimited') {
-                    if (extraHours > 0) hourlyRate = 950000;
-                }
-
-                total = basePrice + (extraHours * hourlyRate);
+            if (type && availablePackages[type] && availablePackages[type].prices && availablePackages[type].prices[duration]) {
+                // Exact match from DB
+                total = availablePackages[type].prices[duration];
             } else {
+                // Fallback (should not happen if select options are correct)
                 total = basePrice;
             }
 

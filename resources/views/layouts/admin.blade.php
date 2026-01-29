@@ -18,7 +18,7 @@
 
     <div class="min-h-screen flex">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full z-10 transition-transform transform md:translate-x-0 -translate-x-full" id="sidebar">
+        <aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full z-20 transition-transform transform md:translate-x-0 -translate-x-full" id="sidebar">
             <div class="h-16 flex items-center justify-center border-b border-gray-800">
                 <span class="text-xl font-bold tracking-wider text-yellow-500">LUMINARA</span>
             </div>
@@ -32,6 +32,11 @@
                 <a href="{{ route('admin.bookings.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('admin.bookings.*') ? 'bg-yellow-500 text-black font-bold' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                     Bookings
+                </a>
+
+                <a href="{{ route('admin.packages.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('admin.packages.*') ? 'bg-yellow-500 text-black font-bold' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Paket & Harga
                 </a>
 
                 <a href="{{ route('admin.calendar.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('admin.calendar.*') ? 'bg-yellow-500 text-black font-bold' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition">
@@ -50,16 +55,38 @@
                 </form>
             </div>
         </aside>
+        
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden glass transition-opacity opacity-0"></div>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col md:ml-64 transition-all">
             <!-- Mobile Header -->
-            <header class="bg-white shadow-sm md:hidden h-16 flex items-center px-4 justify-between">
+            <header class="bg-white shadow-sm md:hidden h-16 flex items-center px-4 justify-between sticky top-0 z-10">
                 <span class="font-bold text-lg">LUMINARA ADMIN</span>
-                <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')" class="text-gray-600 focus:outline-none">
+                <button onclick="toggleSidebar()" class="text-gray-600 focus:outline-none p-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </header>
+            
+            <script>
+                function toggleSidebar() {
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebar-overlay');
+                    
+                    if (sidebar.classList.contains('-translate-x-full')) {
+                        // Open
+                        sidebar.classList.remove('-translate-x-full');
+                        overlay.classList.remove('hidden');
+                        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                    } else {
+                        // Close
+                        sidebar.classList.add('-translate-x-full');
+                        overlay.classList.add('opacity-0');
+                        setTimeout(() => overlay.classList.add('hidden'), 300);
+                    }
+                }
+            </script>
 
             <main class="flex-1 p-6 md:p-8 overflow-y-auto">
                 @if(session('success'))

@@ -18,7 +18,11 @@ class BookingController extends Controller
     // Public: Booking Page
     public function create()
     {
-        return view('booking');
+        $packages = \App\Models\Package::with(['prices' => function($q) {
+            $q->orderBy('duration_hours');
+        }])->where('is_active', true)->get();
+        
+        return view('booking', compact('packages'));
     }
 
     // Public: Check Availability JSON
@@ -181,6 +185,61 @@ class BookingController extends Controller
         $bookings = Booking::orderBy($sort, $direction)->paginate(10)->withQueryString();
         
         return view('admin.bookings.index', compact('bookings'));
+    }
+
+    // Admin: Edit Booking Form
+    public function adminEdit($id)
+    {
+        $booking = Booking::findOrFail($id);
+        $packages = \App\Models\Package::where('is_active', true)->get();
+        return view('admin.bookings.edit', compact('booking', 'packages'));
+    }
+
+    // Admin: Update Booking Data
+    public function adminUpdate(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
+        
+        $request->validate([
+            'customer_name' => 'required|string',
+            'customer_phone' => 'required|string',
+            'event_date' => 'required|date',
+            'event_time' => 'required',
+            'duration_hours' => 'required|integer|min:1',
+            'package_type' => 'required|string',
+            'status' => 'required|in:PENDING,DP_DIBAYAR,LUNAS,DIBATALKAN',
+            'price_total' => 'required|numeric'
+        ]);
+
+        // Find package name based on type
+        $package = \App\Models\Package::where('type', $request->package_type)->first();
+        $packageName = $package ? $package->name : $booking->package_name;
+
+        $booking->update([
+            'customer_name' => $request->customer_name,
+            'customer_phone' => $request->customer_phone,
+            'event_date' => $request->event_date,
+            'event_time' => $request->event_time,
+            'duration_hours' => $request->duration_hours,
+            'package_type' => $request->package_type,
+            'package_name' => $packageName,
+            'status' => $request->status,
+            'price_total' => $request->price_total,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Data booking berhasil diperbarui.');
+    }
+
+    // Admin: Delete Booking
+    public function adminDestroy($id)
+    {
+        $booking = Booking::findOrFail($id);
+        if ($booking->payment_proof) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($booking->payment_proof);
+        }
+        $booking->delete();
+        return back()->with('success', 'Booking berhasil dihapus.');
     }
 
     // Admin: Update Status

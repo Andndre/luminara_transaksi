@@ -35,6 +35,12 @@
             background-position: center;
             background-attachment: fixed;
         }
+        
+        @media (max-width: 768px) {
+            .hero-bg {
+                background-attachment: scroll; /* Fix background attachment on mobile */
+            }
+        }
 
         #navbar {
             transition: all 0.3s ease;
@@ -80,6 +86,11 @@
             color: white;
         }
 
+        /* Mobile specific styles */
+        .mobile-menu-open {
+            overflow: hidden;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -97,13 +108,13 @@
 <body class="selection:bg-luminara-gold font-sans text-gray-800 antialiased selection:text-white">
 
     <!-- Navbar -->
-    <nav id="navbar" class="nav-transparent fixed z-50 w-full">
+    <nav id="navbar" class="nav-transparent fixed z-50 w-full transition-all duration-300">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div class="flex flex-shrink-0 items-center gap-3">
-                    <img src="/images/logo.png" alt="Luminara Logo" class="h-10 w-auto drop-shadow-md">
+                    <img src="/images/logo.png" alt="Luminara Logo" class="h-8 md:h-10 w-auto drop-shadow-md">
                     <span
-                        class="nav-item font-serif text-2xl font-bold tracking-wide transition-colors duration-300">Luminara</span>
+                        class="nav-item font-serif text-xl md:text-2xl font-bold tracking-wide transition-colors duration-300">Luminara</span>
                 </div>
 
                 <div class="hidden items-center space-x-8 md:flex">
@@ -145,33 +156,31 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero-bg relative flex h-screen items-center justify-center px-4 text-center">
-        <div class="z-10 mx-auto max-w-5xl text-white opacity-0" style="animation: fadeInUp 1s ease-out forwards;">
-            <p class="text-luminara-gold mb-4 font-serif text-xl italic tracking-wider md:text-2xl">Pengalaman Event
-                Premium</p>
-            <h1 class="mb-8 font-serif text-5xl font-bold leading-tight tracking-tight drop-shadow-lg md:text-8xl">
+        <div class="z-10 mx-auto max-w-5xl text-white opacity-0 px-4" style="animation: fadeInUp 1s ease-out forwards;">
+            <p class="text-luminara-gold mb-3 md:mb-4 font-serif text-lg md:text-xl italic tracking-wider">Pengalaman Event Premium</p>
+            <h1 class="mb-6 md:mb-8 font-serif text-4xl sm:text-5xl md:text-8xl font-bold leading-tight tracking-tight drop-shadow-lg">
                 Abadikan Momen <br> <span class="text-white">Berharga</span>
             </h1>
             <p
-                class="mx-auto mb-12 max-w-2xl text-lg font-light leading-relaxed text-gray-200 drop-shadow-md md:text-xl">
-                Layanan Photobooth & 360° Videobooth terbaik di Bali. <br>Tangkap setiap senyuman, setiap gerakan,
-                setiap momen.
+                class="mx-auto mb-8 md:mb-12 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-gray-200 drop-shadow-md px-2">
+                Layanan Photobooth & 360° Videobooth terbaik di Bali. <br class="hidden md:block">Tangkap setiap senyuman, setiap gerakan, setiap momen.
             </p>
-            <div class="flex flex-col justify-center gap-5 sm:flex-row">
+            <div class="flex flex-col justify-center gap-4 sm:flex-row w-full sm:w-auto px-4 sm:px-0">
                 <a href="{{ route('booking.create') }}"
-                    class="bg-luminara-gold group rounded-full px-10 py-4 text-lg font-semibold text-white shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,255,255,0.6)]">
+                    class="bg-luminara-gold group rounded-full px-8 md:px-10 py-3 md:py-4 text-base md:text-lg font-semibold text-white shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] w-full sm:w-auto">
                     Pesan Tanggal
                     <span class="ml-2 inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
                 </a>
                 <a href="#pricing"
-                    class="rounded-full border border-white/30 bg-white/10 px-10 py-4 text-lg font-semibold text-white backdrop-blur-sm transition duration-300 hover:bg-white/20">
+                    class="rounded-full border border-white/30 bg-white/10 px-8 md:px-10 py-3 md:py-4 text-base md:text-lg font-semibold text-white backdrop-blur-sm transition duration-300 hover:bg-white/20 w-full sm:w-auto">
                     Lihat Paket
                 </a>
             </div>
         </div>
 
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 transform animate-bounce">
-            <a href="#features" class="text-white/70 transition hover:text-white">
-                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="#features" class="text-white/70 transition hover:text-white p-2">
+                <svg class="h-6 w-6 md:h-8 md:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
                 </svg>
@@ -180,16 +189,16 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="bg-white py-24">
+    <section id="features" class="bg-white py-16 md:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-20 text-center">
-                <h2 class="mb-4 font-serif text-4xl font-bold">Standar Luminara</h2>
+            <div class="mb-12 md:mb-20 text-center">
+                <h2 class="mb-4 font-serif text-3xl md:text-4xl font-bold">Standar Luminara</h2>
                 <div class="bg-luminara-gold mx-auto h-1 w-24"></div>
-                <p class="mx-auto mt-4 max-w-2xl text-gray-600">Kami menggunakan peralatan profesional untuk memastikan
+                <p class="mx-auto mt-4 max-w-2xl text-gray-600 text-sm md:text-base">Kami menggunakan peralatan profesional untuk memastikan
                     kualitas visual terbaik untuk acara Anda.</p>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 <div
                     class="group rounded-xl border border-transparent bg-gray-50 p-6 text-center transition hover:border-gray-200 hover:shadow-lg">
                     <div

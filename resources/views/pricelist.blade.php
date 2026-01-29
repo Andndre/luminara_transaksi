@@ -66,98 +66,85 @@
             <p class="text-gray-600 max-w-2xl mx-auto">Transparan dan fleksibel. Pilih paket yang sesuai dengan kebutuhan acara Anda.</p>
         </div>
 
+        @php
+            $pbFile = $packages->firstWhere('type', 'pb_file');
+            $pbLimited = $packages->firstWhere('type', 'pb_limited');
+            $pbUnlimited = $packages->firstWhere('type', 'pb_unlimited');
+            $video360 = $packages->firstWhere('type', 'videobooth360');
+            $comboUnlimited = $packages->firstWhere('type', 'combo_unlimited');
+            $comboFile = $packages->firstWhere('type', 'combo_file');
+
+            // Collect all unique durations from PB packages to build the table rows
+            $durations = collect([]);
+            if($pbFile) $durations = $durations->merge($pbFile->prices->pluck('duration_hours'));
+            if($pbLimited) $durations = $durations->merge($pbLimited->prices->pluck('duration_hours'));
+            if($pbUnlimited) $durations = $durations->merge($pbUnlimited->prices->pluck('duration_hours'));
+            $durations = $durations->unique()->sort();
+        @endphp
+
         <!-- 1. PHOTOBOOTH SECTION -->
         <section class="mb-16 bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             <div class="bg-gray-900 px-6 py-8 text-white text-center">
-                <h2 class="font-serif text-3xl font-bold text-luminara-gold mb-2">📸 Photo Booth Packages</h2>
-                <p class="text-gray-400 text-sm">Include: Kamera DSLR Canon, Layar 22", Lighting Studio, Fun Props, & Softfile QR.</p>
+                <h2 class="font-serif text-2xl md:text-3xl font-bold text-luminara-gold mb-2">📸 Photo Booth Packages</h2>
+                <p class="text-gray-400 text-xs md:text-sm">Include: Kamera DSLR Canon, Layar 22", Lighting Studio, Fun Props, & Softfile QR.</p>
             </div>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse min-w-[600px]">
                     <thead>
                         <tr class="bg-gray-50 border-b border-gray-200">
-                            <th class="p-4 font-bold text-gray-900 sticky left-0 bg-gray-50">Durasi</th>
-                            <th class="p-4 font-bold text-gray-600 text-center w-1/4">
-                                <span class="block text-lg text-gray-900">QR Only</span>
-                                <span class="text-xs font-normal">(File Only, No Print)</span>
+                            <th class="p-4 font-bold text-gray-900 sticky left-0 bg-gray-50 text-sm md:text-base">Durasi</th>
+                            <th class="p-4 font-bold text-gray-600 text-center w-1/4 text-sm md:text-base">
+                                <span class="block text-base md:text-lg text-gray-900">QR Only</span>
+                                <span class="text-[10px] md:text-xs font-normal">(File Only, No Print)</span>
                             </th>
-                            <th class="p-4 font-bold text-gray-600 text-center w-1/4">
-                                <span class="block text-lg text-gray-900">Limited Print</span>
-                                <span class="text-xs font-normal">(Kuota Cetak Terbatas)</span>
+                            <th class="p-4 font-bold text-gray-600 text-center w-1/4 text-sm md:text-base">
+                                <span class="block text-base md:text-lg text-gray-900">Limited Print</span>
+                                <span class="text-[10px] md:text-xs font-normal">(Kuota Cetak Terbatas)</span>
                             </th>
-                            <th class="p-4 font-bold text-luminara-gold text-center w-1/4 bg-yellow-50/50">
-                                <span class="block text-lg">✨ Unlimited</span>
-                                <span class="text-xs font-normal text-gray-600">(Cetak Sepuasnya)</span>
+                            <th class="p-4 font-bold text-luminara-gold text-center w-1/4 bg-yellow-50/50 text-sm md:text-base">
+                                <span class="block text-base md:text-lg">✨ Unlimited</span>
+                                <span class="text-[10px] md:text-xs font-normal text-gray-600">(Cetak Sepuasnya)</span>
                             </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">2 Jam</td>
-                            <td class="p-4 text-center">Rp 1.000k</td>
-                            <td class="p-4 text-center">Rp 1.300k <span class="block text-xs text-gray-500">(50 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 2.000k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">3 Jam</td>
-                            <td class="p-4 text-center">Rp 1.200k</td>
-                            <td class="p-4 text-center">Rp 1.600k <span class="block text-xs text-gray-500">(80 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 2.500k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">4 Jam</td>
-                            <td class="p-4 text-center">Rp 1.400k</td>
-                            <td class="p-4 text-center">Rp 1.800k <span class="block text-xs text-gray-500">(100 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 3.000k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">5 Jam</td>
-                            <td class="p-4 text-center">Rp 1.600k</td>
-                            <td class="p-4 text-center">Rp 2.500k <span class="block text-xs text-gray-500">(200 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 3.500k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">6 Jam</td>
-                            <td class="p-4 text-center">Rp 1.800k</td>
-                            <td class="p-4 text-center">Rp 3.200k <span class="block text-xs text-gray-500">(300 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 4.000k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">7 Jam</td>
-                            <td class="p-4 text-center">Rp 2.000k</td>
-                            <td class="p-4 text-center">Rp 3.900k <span class="block text-xs text-gray-500">(400 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 4.500k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">8 Jam</td>
-                            <td class="p-4 text-center">Rp 2.200k</td>
-                            <td class="p-4 text-center">Rp 4.400k <span class="block text-xs text-gray-500">(500 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 5.000k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">9 Jam</td>
-                            <td class="p-4 text-center">Rp 2.400k</td>
-                            <td class="p-4 text-center">Rp 5.000k <span class="block text-xs text-gray-500">(600 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 5.500k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">10 Jam</td>
-                            <td class="p-4 text-center">Rp 2.600k</td>
-                            <td class="p-4 text-center">Rp 5.600k <span class="block text-xs text-gray-500">(700 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 6.000k</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 font-bold sticky left-0 bg-white">12 Jam</td>
-                            <td class="p-4 text-center">Rp 3.000k</td>
-                            <td class="p-4 text-center">Rp 6.500k <span class="block text-xs text-gray-500">(900 Print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">Rp 7.000k</td>
-                        </tr>
+                        @foreach($durations as $hour)
+                            @php
+                                $priceFile = $pbFile ? $pbFile->prices->firstWhere('duration_hours', $hour) : null;
+                                $priceLimited = $pbLimited ? $pbLimited->prices->firstWhere('duration_hours', $hour) : null;
+                                $priceUnlimited = $pbUnlimited ? $pbUnlimited->prices->firstWhere('duration_hours', $hour) : null;
+                            @endphp
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="p-4 font-bold sticky left-0 bg-white text-sm md:text-base whitespace-nowrap">{{ $hour }} Jam</td>
+                                
+                                <td class="p-4 text-center text-sm md:text-base whitespace-nowrap">
+                                    @if($priceFile)
+                                        Rp {{ number_format($priceFile->price/1000, 0) }}k
+                                        @if($priceFile->description) <span class="block text-[10px] text-gray-500">({{ $priceFile->description }})</span> @endif
+                                    @else - @endif
+                                </td>
+                                
+                                <td class="p-4 text-center text-sm md:text-base whitespace-nowrap">
+                                    @if($priceLimited)
+                                        Rp {{ number_format($priceLimited->price/1000, 0) }}k
+                                        @if($priceLimited->description) <span class="block text-[10px] text-gray-500">({{ $priceLimited->description }})</span> @endif
+                                    @else - @endif
+                                </td>
+                                
+                                <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30 text-sm md:text-base whitespace-nowrap">
+                                    @if($priceUnlimited)
+                                        Rp {{ number_format($priceUnlimited->price/1000, 0) }}k
+                                        @if($priceUnlimited->description) <span class="block text-[10px] text-gray-500">({{ $priceUnlimited->description }})</span> @endif
+                                    @else - @endif
+                                </td>
+                            </tr>
+                        @endforeach
                          <tr class="bg-gray-50 transition border-t-2 border-gray-200">
-                            <td class="p-4 font-bold sticky left-0 bg-gray-50">Extra</td>
-                            <td class="p-4 text-center text-gray-500">300k/jam</td>
-                            <td class="p-4 text-center text-gray-500">300k/jam <span class="block text-xs">(no print)</span></td>
-                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30">700k/jam</td>
+                            <td class="p-4 font-bold sticky left-0 bg-gray-50 text-sm md:text-base">Extra</td>
+                            <td class="p-4 text-center text-gray-500 text-sm md:text-base">300k/jam</td>
+                            <td class="p-4 text-center text-gray-500 text-sm md:text-base">300k/jam <span class="block text-[10px]">(no print)</span></td>
+                            <td class="p-4 text-center font-bold text-luminara-gold bg-yellow-50/30 text-sm md:text-base">700k/jam</td>
                         </tr>
                     </tbody>
                 </table>
@@ -177,16 +164,19 @@
                     <p class="text-gray-400 text-xs mt-1">Unlimited Video, Slowmo/Rewind, Custom Overlay</p>
                 </div>
                 <div class="p-6 flex-grow">
-                    <ul class="space-y-4">
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>2 Jam</span> <span class="font-bold text-xl">Rp 2.000k</span></li>
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>3 Jam</span> <span class="font-bold text-xl">Rp 2.500k</span></li>
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>4 Jam</span> <span class="font-bold text-xl">Rp 3.000k</span></li>
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>5 Jam</span> <span class="font-bold text-xl">Rp 3.500k</span></li>
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>6 Jam</span> <span class="font-bold text-xl">Rp 4.000k</span></li>
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>7 Jam</span> <span class="font-bold text-xl">Rp 4.500k</span></li>
-                        <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2"><span>8 Jam</span> <span class="font-bold text-xl">Rp 5.000k</span></li>
-                        <li class="flex justify-between items-center text-gray-500 pt-2"><span>Overtime Charge</span> <span>+600k / jam</span></li>
-                    </ul>
+                    @if($video360)
+                        <ul class="space-y-4">
+                            @foreach($video360->prices as $price)
+                                <li class="flex justify-between items-center border-b border-dashed border-gray-200 pb-2">
+                                    <span>{{ $price->duration_hours }} Jam</span> 
+                                    <span class="font-bold text-xl">Rp {{ number_format($price->price/1000, 0) }}k</span>
+                                </li>
+                            @endforeach
+                            <li class="flex justify-between items-center text-gray-500 pt-2"><span>Overtime Charge</span> <span>+600k / jam</span></li>
+                        </ul>
+                    @else
+                        <p class="text-center text-gray-500">Paket tidak tersedia.</p>
+                    @endif
                 </div>
             </section>
 
@@ -198,28 +188,33 @@
                     <p class="text-gray-400 text-xs mt-1">Photobooth + Video 360 (Hemat hingga 500rb)</p>
                 </div>
                 <div class="p-6 flex-grow">
+                     @if($comboUnlimited)
                      <div class="mb-6">
                         <h3 class="text-luminara-gold font-bold text-sm uppercase tracking-wider mb-3">Combo Unlimited Print</h3>
                         <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between"><span>2 Jam</span> <span class="font-bold">Rp 3.950k</span></li>
-                            <li class="flex justify-between"><span>3 Jam</span> <span class="font-bold">Rp 4.900k</span></li>
-                            <li class="flex justify-between"><span>4 Jam</span> <span class="font-bold">Rp 5.850k</span></li>
-                            <li class="flex justify-between"><span>5 Jam</span> <span class="font-bold">Rp 6.800k</span></li>
-                            <li class="flex justify-between"><span>6 Jam</span> <span class="font-bold">Rp 7.750k</span></li>
-                            <li class="flex justify-between"><span>8 Jam</span> <span class="font-bold">Rp 9.650k</span></li>
-                            <li class="flex justify-between text-luminara-gold"><span>10 Jam</span> <span class="font-bold">Rp 11.500k</span></li>
+                            @foreach($comboUnlimited->prices as $price)
+                                <li class="flex justify-between">
+                                    <span>{{ $price->duration_hours }} Jam</span> 
+                                    <span class="font-bold">Rp {{ number_format($price->price/1000, 0) }}k</span>
+                                </li>
+                            @endforeach
                         </ul>
                      </div>
+                     @endif
+
+                     @if($comboFile)
                      <div>
                         <h3 class="text-gray-400 font-bold text-sm uppercase tracking-wider mb-3">Combo File Only (No Print)</h3>
                         <ul class="space-y-3 text-sm text-gray-300 border-t border-gray-700 pt-3">
-                            <li class="flex justify-between"><span>2 Jam</span> <span class="font-bold">Rp 2.800k</span></li>
-                            <li class="flex justify-between"><span>4 Jam</span> <span class="font-bold">Rp 4.200k</span></li>
-                            <li class="flex justify-between"><span>6 Jam</span> <span class="font-bold">Rp 5.600k</span></li>
-                            <li class="flex justify-between"><span>8 Jam</span> <span class="font-bold">Rp 7.000k</span></li>
-                            <li class="flex justify-between"><span>10 Jam</span> <span class="font-bold">Rp 8.400k</span></li>
+                             @foreach($comboFile->prices as $price)
+                                <li class="flex justify-between">
+                                    <span>{{ $price->duration_hours }} Jam</span> 
+                                    <span class="font-bold">Rp {{ number_format($price->price/1000, 0) }}k</span>
+                                </li>
+                            @endforeach
                         </ul>
                      </div>
+                     @endif
                 </div>
             </section>
         </div>
