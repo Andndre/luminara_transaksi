@@ -350,7 +350,7 @@
                                     <input type="hidden" name="dp_amount" id="dp_amount" value="0">
 
                                     <!-- Green Checkmark Indicator -->
-                                    <div id="payment-check" class="hidden absolute inset-y-0 right-0 flex items-center pr-3 text-green-500">
+                                    <div id="payment-check" class="hidden absolute inset-y-0 right-0 items-center pr-3 text-green-500">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     </div>
                                 </div>
@@ -633,17 +633,20 @@
             if (totalPrice > 0 && inputAmount >= totalPrice) {
                 // Lunas
                 checkIcon.classList.remove('hidden');
+                checkIcon.classList.add('flex');
                 statusText.textContent = "Status: LUNAS (Pembayaran Penuh)";
                 statusText.classList.add('text-green-600', 'font-bold');
                 statusText.classList.remove('text-gray-500');
             } else if (inputAmount > 0) {
                 // DP
+                checkIcon.classList.remove('flex');
                 checkIcon.classList.add('hidden');
                 statusText.textContent = "Status: DP DIBAYAR (Belum Lunas)";
                 statusText.classList.remove('text-green-600', 'font-bold', 'text-gray-500');
                 statusText.classList.add('text-yellow-600', 'font-bold');
             } else {
                 // Empty
+                checkIcon.classList.remove('flex');
                 checkIcon.classList.add('hidden');
                 statusText.textContent = "Masukkan jumlah yang ditransfer (DP Minimal 500rb atau Pelunasan).";
                 statusText.classList.remove('text-green-600', 'font-bold', 'text-yellow-600');
