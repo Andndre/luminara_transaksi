@@ -4,6 +4,7 @@
 **Luminara Transaksi** is a robust backend microservice and booking management system designed for **Luminara Photobooth**. It serves two primary functions:
 1.  **Payment Service**: Acts as a secure bridge between the local offline-first Flutter application and the **Midtrans Payment Gateway**, facilitating QRIS, VA, and E-Wallet payments within a LAN environment.
 2.  **Booking System**: A web-based booking platform for customers to check availability and book photobooth services, complete with an admin dashboard for management.
+3.  **Invoice System**: Automated and manual invoice generation, management, and printing for client billing.
 
 ## Tech Stack
 *   **Backend Framework**: Laravel 12 (PHP 8.2+)
@@ -74,17 +75,21 @@ composer test
 *Clears config and runs PHPUnit tests.*
 
 ## Project Structure
-*   **`app/Models/`**: Core data models (`Booking`, `Transaction`, `BlockedDate`, `User`).
+*   **`app/Models/`**: Core data models (`Booking`, `Transaction`, `BlockedDate`, `User`, `Invoice`, `InvoiceItem`, `Gallery`, `Package`).
 *   **`app/Http/Controllers/`**:
-    *   `BookingController.php`: Handles public booking flows and admin management.
+    *   `BookingController.php`: Handles public booking flows and admin dashboard logic.
+    *   `Admin/`: Specialized admin controllers (`InvoiceController`, `GalleryController`, `PackageController`, `UserController`).
     *   `Api/PaymentController.php`: Handles API transaction logic.
     *   `AuthController.php`: Admin authentication.
 *   **`routes/`**:
-    *   `web.php`: Public booking pages, Admin dashboard, Auth.
+    *   `web.php`: Public booking pages, Admin dashboard, Invoices, Auth.
     *   `api.php`: Transaction creation and status syncing (Midtrans integration).
 *   **`resources/views/`**: Blade templates for the frontend.
     *   `booking.blade.php`: Public booking form.
     *   `admin/`: Admin dashboard and management views.
+        *   `invoices/`: Invoice list, create, edit, and print views.
+        *   `bookings/`: Booking management.
+        *   `calendar/`: Availability calendar.
 *   **`database/migrations/`**: Database schema definitions.
 
 ## Key Features & Conventions
@@ -93,5 +98,11 @@ composer test
     *   Public users can view pricing and book dates.
     *   Admins can block/unblock dates and manage booking statuses.
     *   Availability check is implemented to prevent double booking.
+    *   **Auto-Invoice**: New bookings automatically generate a corresponding invoice.
+*   **Invoice Management**:
+    *   **CRUD**: Create (manual/auto), Read (List/Detail), Update, Delete.
+    *   **Printing**: Direct "silent" printing via hidden iframe or standard window print. Supports PDF generation context.
+    *   **Calculations**: Auto-calculation of subtotals, discounts (fixed/percent), tax, and balance due (DP handling).
 *   **Styling**: Uses Tailwind CSS v4 managed by Vite.
+*   **Admin UI**: SweetAlert2 used for critical confirmations (e.g., deletions).
 *   **API Design**: RESTful API design for transaction management, primarily serving the Flutter mobile client.
