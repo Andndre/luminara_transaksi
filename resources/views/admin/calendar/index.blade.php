@@ -16,7 +16,7 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Tanggal</label>
-                        <input type="date" name="date" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        <input type="text" name="date" id="block_date" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required placeholder="Pilih tanggal...">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Alasan (Opsional)</label>
@@ -69,4 +69,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#block_date", {
+                locale: "id",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d F Y", // Format tampilan user: 29 Januari 2026
+            });
+        });
+    </script>
 @endsection
