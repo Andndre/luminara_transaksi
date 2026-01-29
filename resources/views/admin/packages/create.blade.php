@@ -2,7 +2,10 @@
 
 @section('content')
     <div class="mb-8">
-        <a href="{{ route('admin.packages.index') }}" class="text-gray-500 hover:text-gray-900 text-sm mb-4 inline-block">&larr; Kembali</a>
+        <a href="{{ route('admin.packages.index') }}" class="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm text-sm font-medium transition mb-4">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Kembali ke Daftar
+        </a>
         <h1 class="text-3xl font-bold text-gray-900">Tambah Paket Baru</h1>
     </div>
 
@@ -56,7 +59,7 @@
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Info Tambahan (Opsional)</label>
                                 <input type="text" :name="`prices[${index}][description]`" x-model="price.description" class="w-full px-3 py-2 border rounded text-sm" placeholder="Contoh: 50 Print">
                             </div>
-                            <button type="button" @click="removePrice(index)" class="mt-6 text-red-500 hover:text-red-700 p-1">
+                            <button type="button" @click="removePrice(index)" class="mt-6 text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition" title="Hapus Baris">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
