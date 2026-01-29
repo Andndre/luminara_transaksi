@@ -86,7 +86,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between md:h-20">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <img src="/images/logo.png" alt="Luminara Logo" class="h-8 w-auto md:h-10">
+                    <img src="/images/Logo Luminara Visual-BLACK-TPR.png" alt="Luminara Logo" class="h-8 w-auto md:h-10">
                     <span class="font-serif text-xl font-bold tracking-tight text-gray-900 md:text-2xl">Luminara</span>
                 </a>
                 <a href="{{ route('home') }}"

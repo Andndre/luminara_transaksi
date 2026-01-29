@@ -11,6 +11,10 @@ class Booking extends Model
 
     protected $guarded = ['id'];
 
+    // Enums for Business Unit
+    const UNIT_PHOTOBOOTH = 'photobooth';
+    const UNIT_VISUAL = 'visual';
+
     protected $casts = [
         'event_date' => 'date',
         'price_total' => 'decimal:2',

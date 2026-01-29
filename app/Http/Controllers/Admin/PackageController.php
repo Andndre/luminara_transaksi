@@ -12,7 +12,13 @@ class PackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::with('prices')->get();
+        $query = Package::with('prices');
+        
+        if (auth()->user()->division !== 'super_admin') {
+            $query->where('business_unit', auth()->user()->division);
+        }
+
+        $packages = $query->get();
         return view('admin.packages.index', compact('packages'));
     }
 
@@ -33,12 +39,17 @@ class PackageController extends Controller
             'prices.*.description' => 'nullable|string',
         ]);
 
+        $division = auth()->user()->division;
+        // Default to photobooth if super_admin creates (or add a dropdown for super_admin later)
+        $businessUnit = ($division === 'super_admin') ? 'photobooth' : $division;
+
         $package = Package::create([
             'name' => $request->name,
             'type' => $request->type,
             'base_price' => $request->base_price,
             'description' => $request->description,
             'is_active' => true,
+            'business_unit' => $businessUnit,
         ]);
 
         if ($request->has('prices')) {

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Halo, {{ auth()->user()->name }}!</h1>
         <p class="text-gray-500">Ringkasan aktivitas booking bulan ini.</p>
     </div>
 

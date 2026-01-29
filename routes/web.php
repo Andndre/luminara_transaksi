@@ -4,8 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AuthController;
 
-// Public Routes
+// Public Routes - Gate & Divisions
 Route::get('/', [BookingController::class, 'landing'])->name('home');
+Route::get('/photobooth', [BookingController::class, 'photoboothLanding'])->name('photobooth.home');
+Route::get('/visual', [BookingController::class, 'visualLanding'])->name('visual.home');
+
 Route::get('/pricelist', function () {
     $packages = \App\Models\Package::with(['prices' => function($q) {
         $q->orderBy('duration_hours');
@@ -25,10 +28,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/', [BookingController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/bookings', [BookingController::class, 'adminIndex'])->name('admin.bookings.index');
+    Route::get('/bookings/create', [BookingController::class, 'adminCreate'])->name('admin.bookings.create');
+    Route::post('/bookings', [BookingController::class, 'adminStore'])->name('admin.bookings.store');
     Route::get('/bookings/{id}/edit', [BookingController::class, 'adminEdit'])->name('admin.bookings.edit');
     Route::put('/bookings/{id}', [BookingController::class, 'adminUpdate'])->name('admin.bookings.update');
     Route::delete('/bookings/{id}', [BookingController::class, 'adminDestroy'])->name('admin.bookings.destroy');
     Route::patch('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('admin.bookings.update-status');
+    Route::get('/bookings/{id}/invoice', [\App\Http\Controllers\Admin\InvoiceController::class, 'show'])->name('admin.bookings.invoice');
     
     // Calendar Routes
     Route::get('/calendar', [BookingController::class, 'calendarIndex'])->name('admin.calendar.index');
@@ -37,6 +43,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // Package Routes
     Route::resource('packages', \App\Http\Controllers\Admin\PackageController::class)->names('admin.packages');
+
+    // User Management Routes (Super Admin Only logic handled in controller)
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
+
+    // Gallery Routes
+    Route::post('/galleries/{gallery}/toggle-featured', [\App\Http\Controllers\Admin\GalleryController::class, 'toggleFeatured'])->name('admin.galleries.toggle-featured');
+    Route::resource('galleries', \App\Http\Controllers\Admin\GalleryController::class)->names('admin.galleries');
 });
 
 // Legacy Midtrans Routes

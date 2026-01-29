@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Package extends Model
+class Gallery extends Model
 {
     use HasFactory;
 
@@ -13,9 +13,4 @@ class Package extends Model
 
     const UNIT_PHOTOBOOTH = 'photobooth';
     const UNIT_VISUAL = 'visual';
-
-    public function prices()
-    {
-        return $this->hasMany(PackagePrice::class);
-    }
 }

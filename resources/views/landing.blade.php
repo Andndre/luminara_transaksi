@@ -29,16 +29,18 @@
         }
     </script>
     <style>
+        /* Fallback background if JS disabled or no images */
         .hero-bg {
-            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-color: #1a1a1a;
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            transition: background-image 1s ease-in-out;
         }
         
         @media (max-width: 768px) {
             .hero-bg {
-                background-attachment: scroll; /* Fix background attachment on mobile */
+                background-attachment: scroll;
             }
         }
 
@@ -112,7 +114,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div class="flex flex-shrink-0 items-center gap-3">
-                    <img src="/images/logo.png" alt="Luminara Logo" class="h-8 md:h-10 w-auto drop-shadow-md">
+                    <img id="nav-logo" src="/images/Logo Luminara Visual-WHITE-TPR.png" alt="Luminara Logo" class="h-8 md:h-10 w-auto drop-shadow-md transition-all duration-300">
                     <span
                         class="nav-item font-serif text-xl md:text-2xl font-bold tracking-wide transition-colors duration-300">Luminara</span>
                 </div>
@@ -124,7 +126,7 @@
                         class="nav-item text-sm font-medium tracking-wide transition-colors duration-300">KEUNGGULAN</a>
                     <a href="#pricing"
                         class="nav-item text-sm font-medium tracking-wide transition-colors duration-300">HARGA</a>
-                    <a href="{{ route('booking.create') }}"
+                    <a href="{{ route('booking.create') }}?unit=photobooth"
                         class="nav-btn transform rounded-full px-6 py-2 text-sm font-bold uppercase tracking-wide shadow-lg transition-all duration-300 hover:-translate-y-0.5">
                         Booking Sekarang
                     </a>
@@ -166,7 +168,7 @@
                 Layanan Photobooth & 360° Videobooth terbaik di Bali. <br class="hidden md:block">Tangkap setiap senyuman, setiap gerakan, setiap momen.
             </p>
             <div class="flex flex-col justify-center gap-4 sm:flex-row w-full sm:w-auto px-4 sm:px-0">
-                <a href="{{ route('booking.create') }}"
+                <a href="{{ route('booking.create') }}?unit=photobooth"
                     class="bg-luminara-gold group rounded-full px-8 md:px-10 py-3 md:py-4 text-base md:text-lg font-semibold text-white shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,255,255,0.6)] w-full sm:w-auto">
                     Pesan Tanggal
                     <span class="ml-2 inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
@@ -486,7 +488,7 @@
             <div class="mb-12 grid grid-cols-1 gap-12 md:grid-cols-3">
                 <div>
                     <div class="mb-4 flex items-center gap-2">
-                        <img src="/images/logo.png" alt="Luminara" class="h-8">
+                        <img src="/images/Logo Luminara Visual-BLACK-TPR.png" alt="Luminara" class="h-8">
                         <span class="font-serif text-xl font-bold">Luminara</span>
                     </div>
                     <p class="text-gray-500">
@@ -525,14 +527,17 @@
         const navbar = document.getElementById('navbar');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
+        const navLogo = document.getElementById('nav-logo');
 
         function updateNavbar() {
             if (window.scrollY > 50 || !mobileMenu.classList.contains('hidden')) {
                 navbar.classList.remove('nav-transparent');
                 navbar.classList.add('nav-scrolled');
+                navLogo.src = "/images/Logo Luminara Visual-BLACK-TPR.png";
             } else {
                 navbar.classList.add('nav-transparent');
                 navbar.classList.remove('nav-scrolled');
+                navLogo.src = "/images/Logo Luminara Visual-WHITE-TPR.png";
             }
         }
 
@@ -541,6 +546,7 @@
         if (mobileMenuBtn) {
             mobileMenuBtn.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
+                document.body.classList.toggle('mobile-menu-open');
                 updateNavbar();
             });
         }
@@ -552,6 +558,34 @@
                 updateNavbar();
             });
         });
+
+        // Hero Slideshow
+        const heroImages = @json($heroImages ?? []);
+        const heroBg = document.getElementById('home');
+        
+        if (heroImages.length > 0) {
+            let currentIndex = 0;
+            
+            // Set initial image
+            heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('${heroImages[0]}')`;
+
+            if (heroImages.length > 1) {
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % heroImages.length;
+                    const nextImage = heroImages[currentIndex];
+                    
+                    // Preload image
+                    const img = new Image();
+                    img.src = nextImage;
+                    img.onload = () => {
+                        heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('${nextImage}')`;
+                    };
+                }, 5000); // Change every 5 seconds
+            }
+        } else {
+            // Default fallback
+            heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')`;
+        }
     </script>
 </body>
 

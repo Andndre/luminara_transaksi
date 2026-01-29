@@ -6,7 +6,9 @@
             <h1 class="text-3xl font-bold text-gray-900">Daftar Booking</h1>
             <p class="text-gray-500">Kelola semua pesanan masuk di sini.</p>
         </div>
-        <!-- Optional: Filter Button or Export -->
+        <a href="{{ route('admin.bookings.create') }}" class="bg-black text-white hover:bg-gray-800 font-bold py-2 px-4 rounded-lg transition shadow-sm">
+            + Buat Booking Manual
+        </a>
     </div>
     
     <div class="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">
@@ -33,11 +35,12 @@
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Pelanggan</th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Paket</th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Total</th>
+                        <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Bukti TF</th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
                         <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider text-right whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-100" x-data="{ showModal: false, imgSrc: '' }">
                     @forelse($bookings as $booking)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-6 whitespace-nowrap">
@@ -58,6 +61,15 @@
                         </td>
                          <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
                             Rp {{ number_format($booking->price_total, 0, ',', '.') }}
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            @if($booking->payment_proof)
+                                <button @click="showModal = true; imgSrc = '{{ asset('storage/' . $booking->payment_proof) }}'" class="text-blue-500 hover:text-blue-700 transition" title="Lihat Bukti Transfer">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                            @else
+                                <span class="text-xs text-gray-400">-</span>
+                            @endif
                         </td>
                         <td class="py-4 px-6">
                             <form action="{{ route('admin.bookings.update-status', $booking->id) }}" method="POST" id="status-form-{{ $booking->id }}">
@@ -83,6 +95,9 @@
                                <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                </a>
+                               <a href="{{ route('admin.bookings.invoice', $booking->id) }}" target="_blank" class="text-gray-600 hover:text-gray-900" title="Invoice">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                               </a>
                                <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" onsubmit="return confirm('Hapus booking ini permanen?');">
                                    @csrf
                                    @method('DELETE')
@@ -95,9 +110,30 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-8 text-center text-gray-500">Belum ada data booking.</td>
+                        <td colspan="8" class="py-8 text-center text-gray-500">Belum ada data booking.</td>
                     </tr>
                     @endforelse
+
+                    <!-- Image Modal -->
+                    <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75" style="display: none;">
+                        <div class="relative bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+                            <div class="flex justify-between items-center p-4 border-b">
+                                <h3 class="text-lg font-bold text-gray-900">Bukti Transfer</h3>
+                                <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                            <div class="p-4 flex-1 overflow-auto flex justify-center bg-gray-100">
+                                <img :src="imgSrc" alt="Bukti Transfer" class="max-w-full h-auto object-contain rounded">
+                            </div>
+                            <div class="p-4 border-t flex justify-end">
+                                <a :href="imgSrc" download class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    Download Gambar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </tbody>
             </table>
         </div>

@@ -9,20 +9,50 @@ use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
-    // Public: Landing Page
+    // Public: Gate Page (Main Entry)
     public function landing()
     {
-        return view('landing');
+        return view('gate');
+    }
+
+    // Public: Photobooth Landing Page
+    public function photoboothLanding()
+    {
+        $heroImages = \App\Models\Gallery::where('business_unit', 'photobooth')
+            ->where('is_featured', true)
+            ->latest()
+            ->pluck('image_path')
+            ->map(fn($path) => asset('storage/' . $path))
+            ->toArray();
+
+        return view('landing', compact('heroImages'));
+    }
+
+    // Public: Visual Landing Page
+    public function visualLanding()
+    {
+        $heroImages = \App\Models\Gallery::where('business_unit', 'visual')
+            ->where('is_featured', true)
+            ->latest()
+            ->pluck('image_path')
+            ->map(fn($path) => asset('storage/' . $path))
+            ->toArray();
+
+        return view('visual', compact('heroImages'));
     }
 
     // Public: Booking Page
-    public function create()
+    public function create(Request $request)
     {
+        $unit = $request->query('unit', 'photobooth'); // Default to photobooth
+        
         $packages = \App\Models\Package::with(['prices' => function($q) {
             $q->orderBy('duration_hours');
-        }])->where('is_active', true)->get();
+        }])->where('is_active', true)
+           ->where('business_unit', $unit)
+           ->get();
         
-        return view('booking', compact('packages'));
+        return view('booking', compact('packages', 'unit'));
     }
 
     // Public: Check Availability JSON
@@ -102,7 +132,11 @@ class BookingController extends Controller
             $waPaymentMsg = "Bukti pembayaran DP sudah diupload ke sistem.";
         }
 
+        $package = \App\Models\Package::where('type', $request->package_type)->first();
+        $businessUnit = $package ? $package->business_unit : 'photobooth';
+
         $booking = Booking::create([
+            'business_unit' => $businessUnit,
             'package_name' => $request->package_name,
             'package_type' => $request->package_type,
             'duration_hours' => $request->duration_hours,
@@ -149,19 +183,25 @@ class BookingController extends Controller
         // Monthly Stats
         $startOfMonth = now()->startOfMonth()->format('Y-m-d');
         $endOfMonth = now()->endOfMonth()->format('Y-m-d');
+        $user = auth()->user();
 
-        $totalBookings = Booking::whereBetween('event_date', [$startOfMonth, $endOfMonth])
+        $bookingQuery = Booking::query();
+        if ($user->division !== 'super_admin') {
+            $bookingQuery->where('business_unit', $user->division);
+        }
+
+        $totalBookings = (clone $bookingQuery)->whereBetween('event_date', [$startOfMonth, $endOfMonth])
             ->where('status', '!=', Booking::STATUS_DIBATALKAN)
             ->count();
 
-        $revenue = Booking::whereBetween('event_date', [$startOfMonth, $endOfMonth])
+        $revenue = (clone $bookingQuery)->whereBetween('event_date', [$startOfMonth, $endOfMonth])
             ->whereIn('status', [Booking::STATUS_LUNAS, Booking::STATUS_DP_DIBAYAR])
             ->sum('price_total');
 
-        $pendingCount = Booking::where('status', Booking::STATUS_PENDING)->count();
+        $pendingCount = (clone $bookingQuery)->where('status', Booking::STATUS_PENDING)->count();
 
         // Upcoming Events (Next 7 Days)
-        $upcomingEvents = Booking::where('event_date', '>=', now()->format('Y-m-d'))
+        $upcomingEvents = (clone $bookingQuery)->where('event_date', '>=', now()->format('Y-m-d'))
             ->where('event_date', '<=', now()->addDays(7)->format('Y-m-d'))
             ->where('status', '!=', Booking::STATUS_DIBATALKAN)
             ->orderBy('event_date', 'asc')
@@ -182,9 +222,71 @@ class BookingController extends Controller
             $sort = 'event_date';
         }
 
-        $bookings = Booking::orderBy($sort, $direction)->paginate(10)->withQueryString();
+        $query = Booking::orderBy($sort, $direction);
+
+        // Division Filter
+        $user = auth()->user();
+        if ($user->division !== 'super_admin') {
+            $query->where('business_unit', $user->division);
+        }
+
+        $bookings = $query->paginate(10)->withQueryString();
         
         return view('admin.bookings.index', compact('bookings'));
+    }
+
+    // Admin: Create Booking Form
+    public function adminCreate()
+    {
+        $user = auth()->user();
+        $query = \App\Models\Package::with(['prices' => function($q) {
+            $q->orderBy('duration_hours');
+        }])->where('is_active', true);
+
+        if ($user->division !== 'super_admin') {
+            $query->where('business_unit', $user->division);
+        }
+
+        $packages = $query->get();
+        return view('admin.bookings.create', compact('packages'));
+    }
+
+    // Admin: Store Manual Booking
+    public function adminStore(Request $request)
+    {
+        $request->validate([
+            'customer_name' => 'required|string',
+            'customer_phone' => 'required|string',
+            'event_date' => 'required|date',
+            'event_time' => 'required',
+            'duration_hours' => 'required|integer|min:1',
+            'package_type' => 'required|string',
+            'price_total' => 'required|numeric'
+        ]);
+
+        $package = \App\Models\Package::where('type', $request->package_type)->firstOrFail();
+        
+        // Determine Business Unit based on Admin
+        $user = auth()->user();
+        $businessUnit = ($user->division === 'super_admin') ? $package->business_unit : $user->division;
+
+        Booking::create([
+            'customer_name' => $request->customer_name,
+            'customer_phone' => $request->customer_phone,
+            'event_date' => $request->event_date,
+            'event_time' => $request->event_time,
+            'duration_hours' => $request->duration_hours,
+            'package_name' => $package->name,
+            'package_type' => $package->type,
+            'price_total' => $request->price_total,
+            'status' => 'PENDING', // Default to pending, admin can update later
+            'business_unit' => $businessUnit,
+            'event_location' => $request->event_location ?? '-',
+            'payment_type' => 'MANUAL_ADMIN',
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Booking manual berhasil dibuat.');
     }
 
     // Admin: Edit Booking Form
