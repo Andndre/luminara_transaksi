@@ -12,7 +12,8 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Desktop Table -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase border-b border-gray-100">
                     <tr>
@@ -52,6 +53,41 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <!-- Mobile Card List -->
+        <div class="block md:hidden divide-y divide-gray-100">
+            @foreach($users as $user)
+                <div class="p-4 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-gray-900">{{ $user->name }}</h3>
+                            <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                        </div>
+                        <div>
+                            @if($user->division == 'super_admin')
+                                <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-1 rounded">Super Admin</span>
+                            @elseif($user->division == 'photobooth')
+                                <span class="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded">Photobooth</span>
+                            @elseif($user->division == 'visual')
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-1 rounded">Visual</span>
+                            @else
+                                <span class="bg-gray-100 text-gray-800 text-[10px] font-bold px-2 py-1 rounded">{{ $user->division }}</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-2 border-t border-gray-50">
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 text-sm font-medium">Edit</a>
+                        @if(auth()->id() !== $user->id)
+                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus admin ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 text-sm font-medium">Hapus</button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 @endsection

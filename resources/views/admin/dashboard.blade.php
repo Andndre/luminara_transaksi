@@ -43,9 +43,11 @@
     </div>
 
     <!-- Upcoming Events -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="text-lg font-bold text-gray-900 mb-6">Acara Mendatang (7 Hari ke Depan)</h2>
-        <div class="overflow-x-auto">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4 md:mb-6">Acara Mendatang (7 Hari ke Depan)</h2>
+        
+        <!-- Desktop Table -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="text-xs font-bold text-gray-400 uppercase border-b border-gray-100">
@@ -83,6 +85,37 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Mobile Card List -->
+        <div class="block md:hidden space-y-4">
+            @forelse($upcomingEvents as $event)
+                <div class="border border-gray-100 rounded-xl p-4 bg-gray-50">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            {{ $event->event_date->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($event->event_time)->format('H:i') }}
+                        </div>
+                        <div>
+                            @if($event->status == 'LUNAS')
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800">LUNAS</span>
+                            @elseif($event->status == 'DP_DIBAYAR')
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">DP</span>
+                            @else
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800">{{ $event->status }}</span>
+                            @endif
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-sm">{{ $event->customer_name }}</h3>
+                    <p class="text-xs text-gray-600 mt-1">{{ $event->package_name }}</p>
+                    <div class="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="truncate">{{ $event->event_location ?? 'Lokasi belum diisi' }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center text-gray-500 py-4 text-sm">Belum ada acara dalam waktu dekat.</div>
+            @endforelse
+        </div>
+
         <div class="mt-4 text-right">
             <a href="{{ route('admin.bookings.index') }}" class="text-sm font-medium text-yellow-600 hover:text-yellow-700">Lihat Semua Booking &rarr;</a>
         </div>

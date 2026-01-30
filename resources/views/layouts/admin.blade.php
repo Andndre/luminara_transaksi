@@ -16,9 +16,9 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 overflow-x-hidden">
 
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex w-full">
         <!-- Sidebar -->
         <aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full z-20 transition-transform transform md:translate-x-0 -translate-x-full" id="sidebar">
             <div class="h-16 flex flex-col items-center justify-center border-b border-gray-800">
@@ -85,7 +85,7 @@
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden glass transition-opacity opacity-0"></div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col md:ml-64 transition-all">
+        <div class="flex-1 flex flex-col md:ml-64 transition-all min-w-0 w-full max-w-full">
             <!-- Mobile Header -->
             <header class="bg-white shadow-sm md:hidden h-16 flex items-center px-4 justify-between sticky top-0 z-10">
                 <span class="font-bold text-lg">LUMINARA ADMIN</span>
