@@ -35,9 +35,7 @@
             window.onload = function() {
                 setTimeout(() => {
                     window.print();
-                    if (window.location.search.includes('print=1')) {
-                        window.close();
-                    }
+                    // window.close() removed to prevent mobile print errors
                 }, 500);
             }
         </script>
