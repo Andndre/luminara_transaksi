@@ -92,7 +92,7 @@
         @endforelse
 
         <!-- Modal -->
-        <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" style="display: none;"
+        <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 bg-black/90 backdrop-blur-sm" style="display: none;"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
@@ -100,18 +100,18 @@
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0">
             
-            <div class="relative max-w-5xl w-full h-full md:h-auto flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-2xl" @click.away="showModal = false">
+            <div class="relative max-w-5xl w-full h-full md:h-auto md:max-h-[90vh] flex flex-col md:flex-row bg-white md:rounded-2xl overflow-hidden shadow-2xl" @click.away="showModal = false">
                 
                 <!-- Image Container -->
-                <div class="w-full md:w-2/3 bg-black flex items-center justify-center relative group">
-                    <img :src="activePhoto ? '{{ asset('storage') }}/' + activePhoto.image_path : ''" class="max-w-full max-h-[80vh] object-contain">
+                <div class="w-full md:w-2/3 bg-black flex items-center justify-center relative group h-1/2 md:h-auto">
+                    <img :src="activePhoto ? '{{ asset('storage') }}/' + activePhoto.image_path : ''" class="max-w-full max-h-full md:max-h-[80vh] object-contain">
                     <button @click="showModal = false" class="absolute top-4 left-4 text-white hover:text-gray-300 bg-black/50 rounded-full p-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
 
                 <!-- Sidebar Details -->
-                <div class="w-full md:w-1/3 p-6 flex flex-col justify-between bg-white">
+                <div class="w-full md:w-1/3 p-6 flex flex-col justify-between bg-white h-1/2 md:h-auto overflow-y-auto">
                     <div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-1" x-text="activePhoto?.title || 'Tanpa Judul'"></h3>
                         <span class="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded uppercase tracking-wide font-bold mb-6" x-text="activePhoto?.business_unit"></span>

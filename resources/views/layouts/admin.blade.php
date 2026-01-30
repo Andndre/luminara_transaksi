@@ -113,7 +113,7 @@
                 }
             </script>
 
-            <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto">
                 @if(session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm" role="alert">
                         <p class="font-bold">Berhasil</p>
