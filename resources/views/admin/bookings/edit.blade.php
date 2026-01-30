@@ -7,7 +7,7 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden max-w-4xl">
-        <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST" class="p-8 space-y-6">
+        <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST" class="p-4 md:p-8 space-y-6">
             @csrf
             @method('PUT')
             

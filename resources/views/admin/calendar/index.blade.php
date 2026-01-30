@@ -35,37 +35,39 @@
                 <div class="p-6 border-b border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900">Daftar Tanggal Diblokir</h3>
                 </div>
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
-                        <tr>
-                            <th class="px-6 py-3">Tanggal</th>
-                            <th class="px-6 py-3">Alasan</th>
-                            <th class="px-6 py-3 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        @forelse($blockedDates as $blocked)
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 font-medium text-gray-900">
-                                    {{ $blocked->date->format('d/m/Y') }}
-                                    <span class="text-gray-400 text-xs block">{{ $blocked->date->format('l') }}</span>
-                                </td>
-                                <td class="px-6 py-4 text-gray-600">{{ $blocked->reason ?? '-' }}</td>
-                                <td class="px-6 py-4 text-right">
-                                    <form action="{{ route('admin.calendar.unblock', $blocked->id) }}" method="POST" onsubmit="return confirm('Buka kembali tanggal ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Buka Blokir</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                             <tr>
-                                <td colspan="3" class="px-6 py-8 text-center text-gray-500">Tidak ada tanggal yang diblokir saat ini.</td>
+                                <th class="px-6 py-3 whitespace-nowrap">Tanggal</th>
+                                <th class="px-6 py-3 whitespace-nowrap">Alasan</th>
+                                <th class="px-6 py-3 text-right whitespace-nowrap">Aksi</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse($blockedDates as $blocked)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                        {{ $blocked->date->format('d/m/Y') }}
+                                        <span class="text-gray-400 text-xs block">{{ $blocked->date->format('l') }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 min-w-[200px]">{{ $blocked->reason ?? '-' }}</td>
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <form action="{{ route('admin.calendar.unblock', $blocked->id) }}" method="POST" onsubmit="return confirm('Buka kembali tanggal ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Buka Blokir</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">Tidak ada tanggal yang diblokir saat ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

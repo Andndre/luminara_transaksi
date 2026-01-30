@@ -54,6 +54,17 @@
         .nav-scrolled .nav-item:hover {
             color: #b45309; /* amber-700 */
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-900 selection:bg-amber-200 selection:text-stone-900">
@@ -101,7 +112,7 @@
         <div id="hero-bg-1" class="absolute inset-0 z-0 bg-cover bg-center bg-fixed transition-opacity duration-[1500ms] opacity-100"></div>
         <div id="hero-bg-2" class="absolute inset-0 z-0 bg-cover bg-center bg-fixed transition-opacity duration-[1500ms] opacity-0"></div>
         
-        <div class="max-w-4xl mx-auto relative z-10">
+        <div class="max-w-4xl mx-auto relative z-10 opacity-0" style="animation: fadeInUp 1s ease-out forwards;">
             <span class="text-amber-200 font-bold uppercase tracking-[0.4em] text-xs mb-4 block">Crafting Memories</span>
             <h1 class="text-5xl md:text-7xl font-serif mb-8 leading-tight text-white drop-shadow-lg">Timeless Stories Through <span class="italic font-normal underline decoration-amber-200 underline-offset-8">Cinematic</span> Lenses.</h1>
             <p class="text-stone-200 text-lg md:text-xl max-w-2xl mx-auto mb-12 drop-shadow-md">Luminara Visual mengkhususkan diri dalam dokumentasi pernikahan, kelulusan, dan acara pribadi yang elegan di seluruh Bali.</p>

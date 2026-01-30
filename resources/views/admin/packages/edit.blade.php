@@ -10,7 +10,7 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden max-w-4xl">
-        <form action="{{ route('admin.packages.update', $package->id) }}" method="POST" class="p-8 space-y-6" x-data="packageForm()">
+        <form action="{{ route('admin.packages.update', $package->id) }}" method="POST" class="p-4 md:p-8 space-y-6" x-data="packageForm()">
             @csrf
             @method('PUT')
             
@@ -61,20 +61,20 @@
 
                 <div class="space-y-3">
                     <template x-for="(price, index) in prices" :key="index">
-                        <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                            <div class="w-24">
+                        <div class="flex flex-col md:flex-row items-start gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                            <div class="w-full md:w-24">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Jam</label>
                                 <input type="number" :name="`prices[${index}][duration]`" x-model="price.duration" class="w-full px-3 py-2 border rounded text-sm" required>
                             </div>
-                            <div class="flex-1">
+                            <div class="w-full md:flex-1">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Harga (Rp)</label>
                                 <input type="number" :name="`prices[${index}][price]`" x-model="price.price" class="w-full px-3 py-2 border rounded text-sm" required>
                             </div>
-                            <div class="flex-1">
+                            <div class="w-full md:flex-1">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Info Tambahan (Opsional)</label>
                                 <input type="text" :name="`prices[${index}][description]`" x-model="price.description" class="w-full px-3 py-2 border rounded text-sm">
                             </div>
-                            <button type="button" @click="removePrice(index)" class="mt-6 text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition" title="Hapus Baris">
+                            <button type="button" @click="removePrice(index)" class="self-end md:self-auto mt-2 md:mt-6 text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition" title="Hapus Baris">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
