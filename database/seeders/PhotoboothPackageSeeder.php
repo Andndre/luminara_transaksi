@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Package;
 use App\Models\PackagePrice;
 
-class PackageSeeder extends Seeder
+class PhotoboothPackageSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -88,14 +88,19 @@ class PackageSeeder extends Seeder
         ];
 
         foreach ($packages as $pkgData) {
-            $package = Package::create([
-                'name' => $pkgData['name'],
-                'type' => $pkgData['type'],
-                'description' => $pkgData['description'],
-                'base_price' => $pkgData['base_price'],
-                'is_active' => true,
-            ]);
+            $package = Package::updateOrCreate(
+                ['type' => $pkgData['type']],
+                [
+                    'name' => $pkgData['name'],
+                    'description' => $pkgData['description'],
+                    'base_price' => $pkgData['base_price'],
+                    'is_active' => true,
+                    'business_unit' => 'photobooth',
+                ]
+            );
 
+            // Sync Prices
+            $package->prices()->delete();
             foreach ($pkgData['prices'] as $duration => $data) {
                 if (is_array($data)) {
                     $price = $data['price'];

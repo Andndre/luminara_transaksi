@@ -29,12 +29,13 @@ class BookingController extends Controller
             ->map(fn($path) => asset('storage/' . $path))
             ->toArray();
 
-        return view('landing', compact('heroImages'));
+        return view('photobooth', compact('heroImages'));
     }
 
     // Public: Visual Landing Page
     public function visualLanding()
     {
+        // Hero Images (Featured only)
         $heroImages = \App\Models\Gallery::where('business_unit', 'visual')
             ->where('is_featured', true)
             ->latest()
@@ -42,7 +43,43 @@ class BookingController extends Controller
             ->map(fn($path) => asset('storage/' . $path))
             ->toArray();
 
-        return view('visual', compact('heroImages'));
+        // Portfolio Images (All visual images, limit 12 for grid)
+        $portfolioImages = \App\Models\Gallery::where('business_unit', 'visual')
+            ->latest()
+            ->limit(12)
+            ->get()
+            ->map(function($gallery) {
+                return [
+                    'path' => asset('storage/' . $gallery->image_path),
+                    'title' => $gallery->title ?? 'Visual Work'
+                ];
+            });
+
+        return view('visual', compact('heroImages', 'portfolioImages'));
+    }
+
+    // Public: Photobooth Pricelist
+    public function pricelistPhotobooth()
+    {
+        $packages = \App\Models\Package::with(['prices' => function ($q) {
+            $q->orderBy('duration_hours');
+        }])->where('is_active', true)
+           ->where('business_unit', 'photobooth')
+           ->get();
+
+        return view('pricelist_photobooth', compact('packages'));
+    }
+
+    // Public: Visual Pricelist
+    public function pricelistVisual()
+    {
+        $packages = \App\Models\Package::with(['prices' => function ($q) {
+            $q->orderBy('duration_hours');
+        }])->where('is_active', true)
+           ->where('business_unit', 'visual')
+           ->get();
+
+        return view('pricelist_visual', compact('packages'));
     }
 
     // Public: Booking Page

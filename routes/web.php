@@ -9,12 +9,9 @@ Route::get('/', [BookingController::class, 'landing'])->name('home');
 Route::get('/photobooth', [BookingController::class, 'photoboothLanding'])->name('photobooth.home');
 Route::get('/visual', [BookingController::class, 'visualLanding'])->name('visual.home');
 
-Route::get('/pricelist', function () {
-    $packages = \App\Models\Package::with(['prices' => function($q) {
-        $q->orderBy('duration_hours');
-    }])->where('is_active', true)->get();
-    return view('pricelist', compact('packages'));
-})->name('pricelist');
+Route::get('/pricelist', [BookingController::class, 'pricelistPhotobooth'])->name('pricelist');
+Route::get('/pricelist/visual', [BookingController::class, 'pricelistVisual'])->name('pricelist.visual');
+
 Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/calendar/availability', [BookingController::class, 'availability'])->name('calendar.availability');

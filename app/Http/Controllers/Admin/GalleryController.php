@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
 
 class GalleryController extends Controller
 {
@@ -33,22 +34,34 @@ class GalleryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB (processed later)
             'title' => 'nullable|string|max:255',
         ]);
 
         $userAuth = Auth::user()->id;
         $user = User::find($userAuth);
-        // Determine unit. Default to photobooth if super_admin doesn't choose (simplified for now)
-        // Ideally super_admin should have a dropdown, but let's default to 'visual' or 'photobooth' based on context or request.
-        // For simplicity: If super_admin, we might need a dropdown. 
-        // Let's assume for this specific flow, we check the request or default to photobooth if not specified.
         
         $businessUnit = ($user->division === 'super_admin') 
             ? ($request->business_unit ?? 'photobooth') 
             : $user->division;
 
-        $path = $request->file('image')->store('gallery', 'public');
+        // Process Image
+        $imageFile = $request->file('image');
+        $filename = time() . '_' . uniqid() . '.webp';
+        $path = 'gallery/' . $filename;
+
+        $image = Image::read($imageFile);
+
+        // Resize if width > 1920px, keep aspect ratio
+        if ($image->width() > 1920) {
+            $image->scale(width: 1920);
+        }
+
+        // Encode to WebP with 80% quality
+        $encoded = $image->toWebp(quality: 80);
+
+        // Save to storage
+        Storage::disk('public')->put($path, (string) $encoded);
 
         Gallery::create([
             'business_unit' => $businessUnit,
@@ -57,7 +70,7 @@ class GalleryController extends Controller
             'is_featured' => $request->has('is_featured'),
         ]);
 
-        return redirect()->route('admin.galleries.index')->with('success', 'Foto berhasil ditambahkan.');
+        return redirect()->route('admin.galleries.index')->with('success', 'Foto berhasil ditambahkan & dioptimasi (WebP).');
     }
 
     public function destroy(Gallery $gallery)

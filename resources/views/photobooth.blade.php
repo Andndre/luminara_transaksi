@@ -327,7 +327,7 @@
                         </ul>
                     </div>
                     <div class="mt-auto bg-gray-50 p-8">
-                        <a href="{{ route('booking.create') }}?paket=Unlimited Photobooth&type=photobooth"
+                        <a href="{{ route('booking.create') }}?unit=photobooth&type=pb_unlimited"
                             class="block w-full rounded-xl bg-gray-900 py-3 text-center font-semibold text-white transition hover:bg-gray-800">Pilih
                             Paket Ini</a>
                     </div>
@@ -384,7 +384,7 @@
                         </ul>
                     </div>
                     <div class="mt-auto bg-gray-50 p-8">
-                        <a href="{{ route('booking.create') }}?paket=Combo Ultimate&type=combo"
+                        <a href="{{ route('booking.create') }}?unit=photobooth&type=combo_unlimited"
                             class="bg-luminara-gold block w-full rounded-xl py-3 text-center font-semibold text-white transition hover:bg-yellow-600">Pilih
                             Paket Ini</a>
                     </div>
@@ -435,7 +435,7 @@
                         </ul>
                     </div>
                     <div class="mt-auto bg-gray-50 p-8">
-                        <a href="{{ route('booking.create') }}?paket=Videobooth 360&type=videobooth360"
+                        <a href="{{ route('booking.create') }}?unit=photobooth&type=videobooth360"
                             class="block w-full rounded-xl bg-gray-900 py-3 text-center font-semibold text-white transition hover:bg-gray-800">Pilih
                             Paket Ini</a>
                     </div>
