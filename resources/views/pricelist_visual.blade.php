@@ -78,7 +78,7 @@
                                 @endif
                             @endforeach
                         </div>
-                        <a href="{{ route('booking.create') }}?unit=visual&package_type={{ $pkg->type }}" class="block w-full py-3 border border-stone-300 text-stone-600 font-bold text-center rounded-full hover:bg-stone-900 hover:text-white hover:border-stone-900 transition text-sm uppercase tracking-wider">
+                        <a href="{{ route('booking.create') }}?unit=visual&type={{ $pkg->type }}" class="block w-full py-3 border border-stone-300 text-stone-600 font-bold text-center rounded-full hover:bg-stone-900 hover:text-white hover:border-stone-900 transition text-sm uppercase tracking-wider">
                             Select Package
                         </a>
                     </div>
@@ -96,48 +96,40 @@
                     <div class="h-px bg-stone-300 flex-1"></div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     @php
-                        $visualPackages = $packages->filter(fn($p) => str_starts_with($p->type, 'visual'));
+                        $visualPackages = $packages->filter(fn($p) => str_starts_with($p->type, 'visual'))->sortBy('base_price');
                     @endphp
 
                     @forelse($visualPackages as $pkg)
-                    <div class="bg-stone-900 text-stone-100 p-10 rounded-2xl shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col relative overflow-hidden group">
+                    <div class="bg-stone-900 text-stone-100 p-8 rounded-2xl shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col relative overflow-hidden group">
+                        @if($pkg->type == 'visual_premium')
+                            <div class="absolute top-0 right-0 bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-widest z-20">Most Complete</div>
+                        @endif
+
                         <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition">
-                            <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                         </div>
                         
                         <div class="mb-6 relative z-10">
-                            <h3 class="font-serif text-3xl mb-2">{{ $pkg->name }}</h3>
-                            <p class="text-stone-400 text-sm mb-4">{{ $pkg->description }}</p>
+                            <h3 class="font-serif text-2xl mb-2">{{ str_replace('Visual: ', '', $pkg->name) }}</h3>
                             <div class="text-amber-200 font-bold text-2xl tracking-widest">
                                 Rp {{ number_format($pkg->base_price / 1000, 0) }}k
                             </div>
                         </div>
                         
                         <div class="flex-grow relative z-10 mb-8">
-                             <ul class="space-y-3 text-stone-300 text-sm">
-                                <li class="flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>8 Jam Liputan (Standby)</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>Google Drive Delivery</span>
-                                </li>
-                                 <li class="flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>Professional Gear (Sony Alpha / Canon R Series)</span>
-                                </li>
-                             </ul>
+                             <div class="space-y-2 text-stone-300 text-xs leading-relaxed">
+                                {!! nl2br(e($pkg->description)) !!}
+                             </div>
                         </div>
 
-                        <a href="{{ route('booking.create') }}?unit=visual&package_type={{ $pkg->type }}" class="block w-full py-4 bg-amber-700 text-white font-bold text-center rounded-xl hover:bg-amber-600 transition text-sm uppercase tracking-wider relative z-10 shadow-lg shadow-amber-900/50">
+                        <a href="{{ route('booking.create') }}?unit=visual&type={{ $pkg->type }}" class="block w-full py-3 bg-amber-700 text-white font-bold text-center rounded-xl hover:bg-amber-600 transition text-xs uppercase tracking-wider relative z-10 shadow-lg shadow-amber-900/50">
                             Book This Package
                         </a>
                     </div>
                     @empty
-                    <div class="col-span-2 text-center text-stone-400 italic">Belum ada paket event tersedia.</div>
+                    <div class="col-span-3 text-center text-stone-400 italic">Belum ada paket event tersedia.</div>
                     @endforelse
                 </div>
             </div>
