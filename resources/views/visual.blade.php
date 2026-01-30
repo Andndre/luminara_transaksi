@@ -96,7 +96,10 @@
     </nav>
 
     <!-- Hero -->
-    <header id="home" class="pt-40 pb-20 px-4 text-center min-h-screen flex flex-col justify-center items-center relative text-white">
+    <header id="home" class="relative pt-40 pb-20 px-4 text-center min-h-screen flex flex-col justify-center items-center text-white overflow-hidden">
+        <!-- Background Layers for Crossfade -->
+        <div id="hero-bg-1" class="absolute inset-0 z-0 bg-cover bg-center bg-fixed transition-opacity duration-[1500ms] opacity-100"></div>
+        <div id="hero-bg-2" class="absolute inset-0 z-0 bg-cover bg-center bg-fixed transition-opacity duration-[1500ms] opacity-0"></div>
         
         <div class="max-w-4xl mx-auto relative z-10">
             <span class="text-amber-200 font-bold uppercase tracking-[0.4em] text-xs mb-4 block">Crafting Memories</span>
@@ -341,28 +344,42 @@
     <script>
         // Hero Slideshow
         const heroImages = @json($heroImages ?? []);
-        const heroBg = document.getElementById('home');
+        const bg1 = document.getElementById('hero-bg-1');
+        const bg2 = document.getElementById('hero-bg-2');
         
         // Default background
         const defaultBg = "linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1920')";
 
         if (heroImages.length > 0) {
             let currentIndex = 0;
-            heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('${heroImages[0]}')`;
+            let activeBg = bg1;
+            const gradient = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))';
+
+            bg1.style.backgroundImage = `${gradient}, url('${heroImages[0]}')`;
 
             if (heroImages.length > 1) {
                 setInterval(() => {
                     currentIndex = (currentIndex + 1) % heroImages.length;
                     const nextImage = heroImages[currentIndex];
+                    const nextBg = activeBg === bg1 ? bg2 : bg1;
+
                     const img = new Image();
                     img.src = nextImage;
                     img.onload = () => {
-                        heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('${nextImage}')`;
+                        nextBg.style.backgroundImage = `${gradient}, url('${nextImage}')`;
+                        
+                        // Fade transition
+                        activeBg.classList.add('opacity-0');
+                        activeBg.classList.remove('opacity-100');
+                        nextBg.classList.add('opacity-100');
+                        nextBg.classList.remove('opacity-0');
+                        
+                        activeBg = nextBg;
                     };
                 }, 5000);
             }
         } else {
-            heroBg.style.backgroundImage = defaultBg;
+            bg1.style.backgroundImage = defaultBg;
         }
 
         // Navbar Scroll Logic

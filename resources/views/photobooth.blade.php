@@ -157,7 +157,11 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero-bg relative flex h-screen items-center justify-center px-4 text-center">
+    <section id="home" class="relative flex h-screen items-center justify-center px-4 text-center overflow-hidden">
+        <!-- Background Layers for Crossfade -->
+        <div id="hero-bg-1" class="absolute inset-0 z-0 bg-cover bg-center bg-fixed transition-opacity duration-[1500ms] opacity-100"></div>
+        <div id="hero-bg-2" class="absolute inset-0 z-0 bg-cover bg-center bg-fixed transition-opacity duration-[1500ms] opacity-0"></div>
+        
         <div class="z-10 mx-auto max-w-5xl text-white opacity-0 px-4" style="animation: fadeInUp 1s ease-out forwards;">
             <p class="text-luminara-gold mb-3 md:mb-4 font-serif text-lg md:text-xl italic tracking-wider">Pengalaman Event Premium</p>
             <h1 class="mb-6 md:mb-8 font-serif text-4xl sm:text-5xl md:text-8xl font-bold leading-tight tracking-tight drop-shadow-lg">
@@ -561,30 +565,42 @@
 
         // Hero Slideshow
         const heroImages = @json($heroImages ?? []);
-        const heroBg = document.getElementById('home');
+        const bg1 = document.getElementById('hero-bg-1');
+        const bg2 = document.getElementById('hero-bg-2');
         
         if (heroImages.length > 0) {
             let currentIndex = 0;
+            let activeBg = bg1;
+            
+            const gradient = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4))';
             
             // Set initial image
-            heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('${heroImages[0]}')`;
+            bg1.style.backgroundImage = `${gradient}, url('${heroImages[0]}')`;
 
             if (heroImages.length > 1) {
                 setInterval(() => {
                     currentIndex = (currentIndex + 1) % heroImages.length;
                     const nextImage = heroImages[currentIndex];
+                    const nextBg = activeBg === bg1 ? bg2 : bg1;
                     
-                    // Preload image
+                    // Preload and switch
                     const img = new Image();
                     img.src = nextImage;
                     img.onload = () => {
-                        heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('${nextImage}')`;
+                        nextBg.style.backgroundImage = `${gradient}, url('${nextImage}')`;
+                        
+                        // Fade transition
+                        activeBg.classList.add('opacity-0');
+                        activeBg.classList.remove('opacity-100');
+                        nextBg.classList.add('opacity-100');
+                        nextBg.classList.remove('opacity-0');
+                        
+                        activeBg = nextBg;
                     };
-                }, 5000); // Change every 5 seconds
+                }, 5000);
             }
         } else {
-            // Default fallback
-            heroBg.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')`;
+            bg1.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')`;
         }
     </script>
 </body>
