@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\BlockedDate;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
@@ -47,13 +49,13 @@ class BookingController extends Controller
     public function create(Request $request)
     {
         $unit = $request->query('unit', 'photobooth'); // Default to photobooth
-        
-        $packages = \App\Models\Package::with(['prices' => function($q) {
+
+        $packages = \App\Models\Package::with(['prices' => function ($q) {
             $q->orderBy('duration_hours');
         }])->where('is_active', true)
-           ->where('business_unit', $unit)
-           ->get();
-        
+            ->where('business_unit', $unit)
+            ->get();
+
         return view('booking', compact('packages', 'unit'));
     }
 
@@ -130,10 +132,10 @@ class BookingController extends Controller
 
         if ($request->hasFile('payment_proof')) {
             $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
-            
+
             $amountPaid = $request->dp_amount ?? 0;
             $total = $request->price_total;
-            
+
             if ($amountPaid >= $total) {
                 $initialStatus = Booking::STATUS_LUNAS; // Or whatever status represents Paid
                 $statusPay = "LUNAS (Full Payment)";
@@ -141,7 +143,7 @@ class BookingController extends Controller
                 $initialStatus = Booking::STATUS_DP_DIBAYAR;
                 $statusPay = "DP (Down Payment)";
             }
-            
+
             $waPaymentMsg = "Bukti pembayaran *{$statusPay}* sebesar *Rp " . number_format($amountPaid, 0, ',', '.') . "* sudah diupload ke sistem.";
         }
 
@@ -174,7 +176,7 @@ class BookingController extends Controller
             $invNumber = 'INV/' . now()->format('Y/m') . '/' . str_pad($booking->id, 4, '0', STR_PAD_LEFT);
             $dpAmount = $booking->dp_amount ?? 0;
             $balanceDue = $booking->price_total - $dpAmount;
-            
+
             $invoice = Invoice::create([
                 'booking_id' => $booking->id,
                 'invoice_number' => $invNumber,
@@ -257,7 +259,8 @@ class BookingController extends Controller
         // Monthly Stats
         $startOfMonth = now()->startOfMonth()->format('Y-m-d');
         $endOfMonth = now()->endOfMonth()->format('Y-m-d');
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
 
         $bookingQuery = Booking::query();
         if ($user->division !== 'super_admin') {
@@ -299,21 +302,23 @@ class BookingController extends Controller
         $query = Booking::orderBy($sort, $direction);
 
         // Division Filter
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         if ($user->division !== 'super_admin') {
             $query->where('business_unit', $user->division);
         }
 
         $bookings = $query->paginate(10)->withQueryString();
-        
+
         return view('admin.bookings.index', compact('bookings'));
     }
 
     // Admin: Create Booking Form
     public function adminCreate()
     {
-        $user = auth()->user();
-        $query = \App\Models\Package::with(['prices' => function($q) {
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
+        $query = \App\Models\Package::with(['prices' => function ($q) {
             $q->orderBy('duration_hours');
         }])->where('is_active', true);
 
@@ -339,9 +344,10 @@ class BookingController extends Controller
         ]);
 
         $package = \App\Models\Package::where('type', $request->package_type)->firstOrFail();
-        
+
         // Determine Business Unit based on Admin
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         $businessUnit = ($user->division === 'super_admin') ? $package->business_unit : $user->division;
 
         $booking = Booking::create([
@@ -364,7 +370,7 @@ class BookingController extends Controller
         try {
             $invNumber = 'INV/' . now()->format('Y/m') . '/' . str_pad($booking->id, 4, '0', STR_PAD_LEFT);
             // Admin created bookings have 0 DP initially usually
-            $dpAmount = 0; 
+            $dpAmount = 0;
             $balanceDue = $request->price_total;
 
             $invoice = Invoice::create([
@@ -389,7 +395,7 @@ class BookingController extends Controller
                 'total' => $request->price_total,
             ]);
         } catch (\Exception $e) {
-             \Illuminate\Support\Facades\Log::error('Failed to create invoice for admin booking ' . $booking->id . ': ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to create invoice for admin booking ' . $booking->id . ': ' . $e->getMessage());
         }
 
         return redirect()->route('admin.bookings.index')->with('success', 'Booking manual berhasil dibuat.');
@@ -407,7 +413,7 @@ class BookingController extends Controller
     public function adminUpdate(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
-        
+
         $request->validate([
             'customer_name' => 'required|string',
             'customer_phone' => 'required|string',

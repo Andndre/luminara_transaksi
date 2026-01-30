@@ -14,6 +14,30 @@
 *   **Environment**: DDEV (Docker-based) or Native PHP
 *   **API Authentication**: Laravel Sanctum
 
+## Database Schema
+The database has evolved to support a multi-division business model (`photobooth` & `visual`).
+
+### Core Tables
+1.  **Users (`users`)**
+    *   `division`: Role/Access control (`super_admin`, `photobooth`, `visual`).
+2.  **Packages (`packages` & `package_prices`)**
+    *   `business_unit`: Links package to specific division.
+    *   `type`: Unique identifier (e.g., `pb_unlimited`).
+    *   `base_price`: Starting price.
+    *   `prices` (Relation): One-to-many pricing tiers based on `duration_hours`.
+3.  **Bookings (`bookings`)**
+    *   `business_unit`: Inherited from the selected package.
+    *   `payment_proof`: Path to uploaded transfer proof.
+    *   `dp_amount`: Recorded down payment.
+    *   `event_maps_link`: Google Maps URL for the event.
+4.  **Invoices (`invoices` & `invoice_items`)**
+    *   Linked to `bookings` (optional for manual invoices).
+    *   Comprehensive financial tracking (`subtotal`, `tax`, `discount`, `grand_total`, `balance_due`).
+    *   `status`: `UNPAID`, `PARTIAL`, `PAID`.
+5.  **Galleries (`galleries`)**
+    *   `business_unit`: Segregates images by division.
+    *   `is_featured`: Flags images for landing page hero sections.
+
 ## Getting Started
 
 ### Prerequisites
@@ -93,6 +117,10 @@ composer test
 *   **`database/migrations/`**: Database schema definitions.
 
 ## Key Features & Conventions
+*   **Multi-Division Architecture**:
+    *   **Data Segregation**: Resources (Bookings, Packages, Galleries) are tagged with a `business_unit` ('photobooth' or 'visual').
+    *   **Access Control**: `super_admin` can see all data. Division-specific users (e.g., 'visual') are restricted to their unit's data.
+    *   **Frontend Routing**: Public landing pages are separated (e.g., `/` for Photobooth, `/visual` for Visual services).
 *   **Payment Integration**: Uses `midtrans/midtrans-php`. Supports "Smart Synchronization" to update transaction status from Midtrans Cloud to the local DB via the `/api/transaction/{orderId}/sync` endpoint.
 *   **Booking Logic**:
     *   Public users can view pricing and book dates.

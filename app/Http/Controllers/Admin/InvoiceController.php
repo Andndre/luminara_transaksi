@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
@@ -14,7 +16,8 @@ class InvoiceController extends Controller
     // List Invoices
     public function index()
     {
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         $query = Invoice::with('booking')->latest('invoice_date');
 
         if ($user->division !== 'super_admin') {
@@ -112,7 +115,8 @@ class InvoiceController extends Controller
     {
         $booking = Booking::findOrFail($id);
         
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         if ($user->division !== 'super_admin' && $booking->business_unit !== $user->division) {
             abort(403);
         }

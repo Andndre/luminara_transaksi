@@ -18,6 +18,7 @@
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <h3 class="text-xl font-bold text-gray-900">{{ $package->name }}</h3>
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">{{ $package->business_unit }}</span>
                         <span class="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-500">{{ $package->type }}</span>
                         @if(!$package->is_active)
                             <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold">Non-Aktif</span>

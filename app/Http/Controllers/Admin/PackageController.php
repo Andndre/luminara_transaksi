@@ -5,17 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use App\Models\PackagePrice;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class PackageController extends Controller
 {
     public function index()
     {
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         $query = Package::with('prices');
         
-        if (auth()->user()->division !== 'super_admin') {
-            $query->where('business_unit', auth()->user()->division);
+        if ($user->division !== 'super_admin') {
+            $query->where('business_unit', $user->division);
         }
 
         $packages = $query->get();
@@ -33,15 +37,20 @@ class PackageController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:50|unique:packages,type',
             'base_price' => 'required|numeric|min:0',
+            'business_unit' => 'nullable|in:photobooth,visual',
             'description' => 'nullable|string',
             'prices.*.duration' => 'required|integer|min:1',
             'prices.*.price' => 'required|numeric|min:0',
             'prices.*.description' => 'nullable|string',
         ]);
 
-        $division = auth()->user()->division;
-        // Default to photobooth if super_admin creates (or add a dropdown for super_admin later)
-        $businessUnit = ($division === 'super_admin') ? 'photobooth' : $division;
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
+        
+        // Use request business_unit if super_admin, otherwise use user's division
+        $businessUnit = ($user->division === 'super_admin') 
+            ? ($request->business_unit ?? 'photobooth') 
+            : $user->division;
 
         $package = Package::create([
             'name' => $request->name,
@@ -77,26 +86,36 @@ class PackageController extends Controller
             'name' => 'required|string|max:255',
             'type' => ['required', 'string', 'max:50', Rule::unique('packages')->ignore($package->id)],
             'base_price' => 'required|numeric|min:0',
+            'business_unit' => 'nullable|in:photobooth,visual',
             'description' => 'nullable|string',
             'prices.*.duration' => 'required|integer|min:1',
             'prices.*.price' => 'required|numeric|min:0',
             'prices.*.description' => 'nullable|string',
         ]);
 
-        $package->update([
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
+
+        $data = [
             'name' => $request->name,
             'type' => $request->type,
             'base_price' => $request->base_price,
             'description' => $request->description,
             'is_active' => $request->has('is_active'),
-        ]);
+        ];
 
-        // Sync prices: Delete old and create new (Simpler than updating individually for now)
+        // Only allow super_admin to change business_unit
+        if ($user->division === 'super_admin' && $request->has('business_unit')) {
+            $data['business_unit'] = $request->business_unit;
+        }
+
+        $package->update($data);
+
+        // Sync prices: Delete old and create new
         $package->prices()->delete();
 
         if ($request->has('prices')) {
             foreach ($request->prices as $priceData) {
-                // Filter out empty rows if any
                 if ($priceData['duration'] && $priceData['price']) {
                      $package->prices()->create([
                         'duration_hours' => $priceData['duration'],

@@ -15,6 +15,16 @@
             @method('PUT')
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @if(Auth::user()->division == 'super_admin')
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Unit Bisnis</label>
+                    <select name="business_unit" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
+                        <option value="photobooth" {{ $package->business_unit == 'photobooth' ? 'selected' : '' }}>Photobooth</option>
+                        <option value="visual" {{ $package->business_unit == 'visual' ? 'selected' : '' }}>Visual (Dokumentasi)</option>
+                    </select>
+                </div>
+                @endif
+
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nama Paket</label>
                     <input type="text" name="name" value="{{ old('name', $package->name) }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>

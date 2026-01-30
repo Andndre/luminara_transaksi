@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gallery;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         $query = Gallery::latest();
 
         if ($user->division !== 'super_admin') {
@@ -34,7 +37,8 @@ class GalleryController extends Controller
             'title' => 'nullable|string|max:255',
         ]);
 
-        $user = auth()->user();
+        $userAuth = Auth::user()->id;
+        $user = User::find($userAuth);
         // Determine unit. Default to photobooth if super_admin doesn't choose (simplified for now)
         // Ideally super_admin should have a dropdown, but let's default to 'visual' or 'photobooth' based on context or request.
         // For simplicity: If super_admin, we might need a dropdown. 
