@@ -46,20 +46,43 @@
         }
     }">
         @forelse($galleries as $gallery)
-            <div id="gallery-item-{{ $gallery->id }}" class="break-inside-avoid bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group cursor-pointer relative"
-                 @click="showModal = true; activePhoto = {{ $gallery->toJson() }}">
+            <div id="gallery-item-{{ $gallery->id }}" class="break-inside-avoid bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group relative mb-4">
                 
-                <img src="{{ asset('storage/' . $gallery->image_path) }}" class="w-full h-auto object-cover transition duration-500 group-hover:scale-105" loading="lazy">
-                
-                <!-- Overlay Gradient -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                    <p class="text-white text-sm font-bold truncate">{{ $gallery->title ?? 'Tanpa Judul' }}</p>
-                    <p class="text-white/80 text-xs uppercase tracking-wider">{{ $gallery->business_unit }}</p>
+                <!-- Main Click Trigger -->
+                <div class="cursor-pointer" @click="showModal = true; activePhoto = {{ $gallery->toJson() }}">
+                    <img src="{{ asset('storage/' . $gallery->image_path) }}" class="w-full h-auto object-cover transition duration-500 group-hover:scale-105" loading="lazy">
                 </div>
+                
+                <!-- Overlay Actions (Visible on Hover) -->
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex flex-col justify-between p-3">
+                    
+                    <!-- Top Bar: Badge & Actions -->
+                    <div class="flex justify-between items-start pointer-events-auto">
+                        <!-- Featured Badge -->
+                        @if($gallery->is_featured)
+                            <span class="bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                Featured
+                            </span>
+                        @else
+                            <span></span> <!-- Spacer -->
+                        @endif
 
-                <!-- Featured Badge -->
-                <div class="featured-badge absolute top-2 right-2 bg-yellow-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm {{ $gallery->is_featured ? '' : 'hidden' }}">
-                    ★ Featured
+                        <!-- Delete Button -->
+                        <form action="{{ route('admin.galleries.destroy', $gallery->id) }}" method="POST" onsubmit="return confirm('Hapus foto ini permanen?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-white/20 hover:bg-red-500 text-white p-1.5 rounded-lg backdrop-blur-sm transition" title="Hapus Foto">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Bottom Bar: Info (Clickable) -->
+                    <div class="pointer-events-auto cursor-pointer" @click="showModal = true; activePhoto = {{ $gallery->toJson() }}">
+                        <p class="text-white text-sm font-bold truncate drop-shadow-md">{{ $gallery->title ?? 'Tanpa Judul' }}</p>
+                        <p class="text-white/80 text-[10px] uppercase tracking-wider font-medium">{{ $gallery->business_unit }}</p>
+                    </div>
                 </div>
             </div>
         @empty
