@@ -42,10 +42,10 @@
                             <td class="px-6 py-4 text-right flex justify-end gap-2 whitespace-nowrap">
                                 <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
                                 @if(auth()->id() !== $user->id)
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus admin ini?')">
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
+                                        <button type="button" onclick="confirmDelete(this)" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
                                     </form>
                                 @endif
                             </td>
@@ -79,10 +79,10 @@
                     <div class="flex justify-end gap-3 pt-2 border-t border-gray-50">
                         <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 text-sm font-medium">Edit</a>
                         @if(auth()->id() !== $user->id)
-                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus admin ini?')">
+                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 text-sm font-medium">Hapus</button>
+                                <button type="button" onclick="confirmDelete(this)" class="text-red-600 text-sm font-medium">Hapus</button>
                             </form>
                         @endif
                     </div>
@@ -90,4 +90,23 @@
             @endforeach
         </div>
     </div>
+
+    <script>
+        function confirmDelete(button) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Admin yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            })
+        }
+    </script>
 @endsection

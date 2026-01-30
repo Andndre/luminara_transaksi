@@ -53,10 +53,10 @@
                                     </td>
                                     <td class="px-6 py-4 text-gray-600 min-w-[200px]">{{ $blocked->reason ?? '-' }}</td>
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
-                                        <form action="{{ route('admin.calendar.unblock', $blocked->id) }}" method="POST" onsubmit="return confirm('Buka kembali tanggal ini?')">
+                                        <form action="{{ route('admin.calendar.unblock', $blocked->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Buka Blokir</button>
+                                            <button type="button" onclick="confirmUnblock(this)" class="text-red-600 hover:text-red-800 text-sm font-medium">Buka Blokir</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -82,5 +82,22 @@
                 altFormat: "d F Y", // Format tampilan user: 29 Januari 2026
             });
         });
+
+        function confirmUnblock(button) {
+            Swal.fire({
+                title: 'Buka Blokir?',
+                text: "Tanggal ini akan tersedia kembali untuk dipesan.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, buka blokir!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            })
+        }
     </script>
 @endsection

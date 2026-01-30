@@ -69,10 +69,10 @@
                         @endif
 
                         <!-- Delete Button -->
-                        <form action="{{ route('admin.galleries.destroy', $gallery->id) }}" method="POST" onsubmit="return confirm('Hapus foto ini permanen?')">
+                        <form action="{{ route('admin.galleries.destroy', $gallery->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="bg-white/20 hover:bg-red-500 text-white p-1.5 rounded-lg backdrop-blur-sm transition" title="Hapus Foto">
+                            <button type="button" onclick="confirmDelete(this)" class="bg-white/20 hover:bg-red-500 text-white p-1.5 rounded-lg backdrop-blur-sm transition" title="Hapus Foto">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </form>
@@ -136,10 +136,10 @@
                     </div>
 
                     <div class="mt-8 border-t pt-6">
-                        <form :action="`{{ url('admin/galleries') }}/${activePhoto?.id}`" method="POST" onsubmit="return confirm('Hapus foto ini permanen?')">
+                        <form :action="`{{ url('admin/galleries') }}/${activePhoto?.id}`" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-white text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 font-bold py-3 rounded-xl transition">
+                            <button type="button" onclick="confirmDelete(this)" class="w-full flex items-center justify-center gap-2 bg-white text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 font-bold py-3 rounded-xl transition">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 Hapus Foto
                             </button>
@@ -153,4 +153,23 @@
     <div class="mt-6">
         {{ $galleries->links() }}
     </div>
+
+    <script>
+        function confirmDelete(button) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Foto yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            })
+        }
+    </script>
 @endsection
