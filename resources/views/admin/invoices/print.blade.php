@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=850, user-scalable=yes">
     <title>Invoice #{{ str_replace('/', '_', $invoice->invoice_number) }}_{{ $invoice->customer_name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -12,7 +12,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans text-gray-900 p-4 md:p-12 relative">
+<body class="bg-gray-100 font-sans text-gray-900 p-8 relative overflow-x-auto">
 
     @if(session('success'))
         <div id="toast-success" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2 z-50 no-print print:hidden transition-all duration-500">
@@ -43,10 +43,10 @@
         </script>
     @endif
 
-    <div class="max-w-3xl mx-auto bg-white p-6 md:p-12 rounded-lg shadow-lg relative">
+    <div class="w-[800px] mx-auto bg-white p-12 print:p-0 rounded-lg shadow-lg relative print:shadow-none print:w-full">
         
         <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start border-b pb-8 mb-8 gap-6 md:gap-0">
+        <div class="flex flex-row justify-between items-start border-b pb-8 mb-8">
             <div>
                 @php
                     $unitName = $invoice->booking && $invoice->booking->business_unit == 'visual' ? 'Visual' : 'Photobooth';
@@ -64,7 +64,7 @@
                     WhatsApp: 0877-8898-6136
                 </p>
             </div>
-            <div class="text-left md:text-right w-full md:w-auto">
+            <div class="text-right">
                 <h1 class="text-4xl font-bold text-gray-900 mb-2">INVOICE</h1>
                 <p class="text-lg text-gray-600 font-medium">#{{ $invoice->invoice_number }}</p>
                 <p class="text-sm text-gray-500 mt-1">Tanggal: {{ $invoice->invoice_date->format('d F Y') }}</p>
@@ -168,7 +168,7 @@
         <!-- Footer / Payment Info -->
         <div class="border-t pt-8 text-sm text-gray-600">
             <h4 class="font-bold text-gray-900 mb-2">Informasi Pembayaran</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div>
                     <p>Bank BRI: <span class="font-mono font-bold text-black">460701039843530</span> (Ida Bagus Yudhi)</p>
                     <p>SeaBank: <span class="font-mono font-bold text-black">901207048574</span></p>
