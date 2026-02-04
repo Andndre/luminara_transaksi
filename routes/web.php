@@ -44,6 +44,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/invoices/{invoice}', [\App\Http\Controllers\Admin\InvoiceController::class, 'update'])->name('admin.invoices.update');
     Route::get('/invoices/{invoice}/print', [\App\Http\Controllers\Admin\InvoiceController::class, 'print'])->name('admin.invoices.print');
     
+    // Finance Route
+    Route::get('/finance', [\App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('admin.finance.index');
+    
     // Calendar Routes
     Route::get('/calendar', [BookingController::class, 'calendarIndex'])->name('admin.calendar.index');
     Route::post('/calendar/block', [BookingController::class, 'blockDate'])->name('admin.calendar.block');
