@@ -27,7 +27,7 @@ class InvitationTemplate extends Model
 
     public function sections()
     {
-        return $this->hasMany(InvitationSection::class)->orderBy('order_index');
+        return $this->hasMany(InvitationSection::class, 'template_id')->orderBy('order_index');
     }
 
     public function creator()

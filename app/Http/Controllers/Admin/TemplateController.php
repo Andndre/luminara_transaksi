@@ -150,12 +150,23 @@ class TemplateController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $template = InvitationTemplate::findOrFail($id);
+        $template = InvitationTemplate::with(['sections'])->findOrFail($id);
         $newTemplate = $template->replicate();
         $newTemplate->name = $template->name . ' (Copy)';
-        $newTemplate->slug = $template->slug . '-copy';
+        $newTemplate->slug = $template->slug . '-copy-' . time();
         $newTemplate->created_by = $currentUserId;
         $newTemplate->save();
+
+        // Duplicate all sections
+        foreach ($template->sections as $section) {
+            $newTemplate->sections()->create([
+                'section_type' => $section->section_type,
+                'order_index' => $section->order_index,
+                'props' => $section->props,
+                'custom_css' => $section->custom_css,
+                'is_visible' => $section->is_visible,
+            ]);
+        }
 
         return redirect()->route('admin.templates.index')->with('success', 'Template berhasil diduplikasi.');
     }

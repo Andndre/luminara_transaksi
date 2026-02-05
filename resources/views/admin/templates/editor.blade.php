@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.editor')
 
 @section('title', 'Template Editor')
 
@@ -6,7 +6,7 @@
 <style>
     /* Editor-specific styles */
     #editor-container {
-        height: calc(100vh - 80px);
+        height: 100%;
         overflow: hidden;
     }
 
@@ -190,74 +190,25 @@
 </style>
 @endpush
 
+@push('header-actions')
+<!-- Save Status -->
+<span x-show="saving" class="text-sm text-gray-500 saving-indicator">Saving...</span>
+<span x-show="lastSaved && !saving" class="text-sm text-gray-500">Last saved: <span x-text="formatTime(lastSaved)"></span></span>
+
+<!-- Publish Button -->
+<button @click="publish()" :disabled="templateData?.is_active"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition text-sm font-medium"
+        :class="templateData?.is_active ? 'bg-green-500 text-white' : 'bg-black text-white hover:bg-gray-800'">
+    <span x-text="templateData?.is_active ? 'Active' : 'Publish'"></span>
+</button>
+@endpush
+
 @section('content')
 <script>
     window.templateId = {{ $template->id ?? 0 }};
 </script>
 
-<div x-data="templateEditor()" x-init="init()" class="h-full flex flex-col">
-    <!-- Editor Header -->
-    <div class="editor-toolbar flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <a href="/admin/templates" class="text-gray-600 hover:text-gray-900">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-lg font-semibold" x-text="templateData?.name || 'Loading...'"></h1>
-                <p class="text-xs text-gray-500" x-text="templateData?.slug ?? ''"></p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <!-- Viewport Switcher -->
-            <div class="flex bg-gray-100 rounded-lg p-1">
-                <button @click="setViewport('desktop')"
-                        :class="currentViewport === 'desktop' ? 'active' : ''"
-                        class="viewport-btn px-3 py-1.5 rounded-md text-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    Desktop
-                </button>
-                <button @click="setViewport('tablet')"
-                        :class="currentViewport === 'tablet' ? 'active' : ''"
-                        class="viewport-btn px-3 py-1.5 rounded-md text-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                    </svg>
-                    Tablet
-                </button>
-                <button @click="setViewport('mobile')"
-                        :class="currentViewport === 'mobile' ? 'active' : ''"
-                        class="viewport-btn px-3 py-1.5 rounded-md text-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                    </svg>
-                    Mobile
-                </button>
-            </div>
-
-            <div class="h-6 w-px bg-gray-300"></div>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-2">
-                <span x-show="saving" class="text-sm text-gray-500 saving-indicator">Saving...</span>
-                <span x-show="lastSaved && !saving" class="text-sm text-gray-500">Last saved: <span x-text="formatTime(lastSaved)"></span></span>
-
-                <button @click="saveAndClose()" class="px-4 py-2 border rounded-lg hover:bg-gray-50 transition text-sm">
-                    Save & Close
-                </button>
-                <button @click="publish()" :disabled="templateData?.is_active"
-                        class="px-4 py-2 rounded-lg transition text-sm"
-                        :class="templateData?.is_active ? 'bg-green-500 text-white' : 'bg-black text-white hover:bg-gray-800'">
-                    <span x-text="templateData?.is_active ? 'Active' : 'Publish'"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-
+<div x-data="templateEditor()" x-init="init()" class="h-full flex">
     <!-- Editor Container -->
     <div id="editor-container" class="flex flex-1 overflow-hidden">
         <!-- Left Sidebar - Components -->
@@ -417,6 +368,11 @@ function templateEditor() {
         async init() {
             await this.loadTemplateData();
             this.initSortable();
+
+            // Listen for save event from layout
+            window.addEventListener('editor-save', () => {
+                this.saveSections();
+            });
         },
 
         async loadTemplateData() {
