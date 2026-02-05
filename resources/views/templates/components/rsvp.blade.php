@@ -1,0 +1,144 @@
+@props(['props' => [], 'section' => null, 'page' => null])
+
+@php
+$title = $props['title'] ?? 'RSVP';
+$subtitle = $props['subtitle'] ?? 'Please confirm your attendance';
+$buttonText = $props['button_text'] ?? 'Kirim Konfirmasi';
+$buttonColor = $props['button_color'] ?? '#d4af37';
+$successMessage = $props['success_message'] ?? 'Terima kasih atas konfirmasi Anda!';
+$whatsappEnabled = $props['whatsapp_enabled'] ?? false;
+$whatsappPhone = $props['whatsapp_phone'] ?? '';
+$backgroundColor = $props['background_color'] ?? '#ffffff';
+$paddingTop = $props['padding_top'] ?? 80;
+$paddingBottom = $props['padding_bottom'] ?? 80;
+@endphp
+
+@section('rsvp_styles')
+<style>
+  .rsvp-section-{{ $section->id }} {
+    background: {{ $backgroundColor }};
+    padding-top: {{ $paddingTop }}px;
+    padding-bottom: {{ $paddingBottom }}px;
+  }
+
+  .rsvp-section-{{ $section->id }} .rsvp-button {
+    background: {{ $buttonColor }};
+    color: #ffffff;
+  }
+
+  .rsvp-section-{{ $section->id }} .rsvp-button:hover {
+    filter: brightness(0.9);
+  }
+</style>
+@endsection
+
+<section class="rsvp-section-{{ $section->id }}">
+  <div class="container mx-auto px-4">
+    <div class="max-w-md mx-auto">
+      <div class="text-center mb-8">
+        @if($title)
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">{{ $title }}</h2>
+        @endif
+        @if($subtitle)
+          <p class="text-gray-600">{{ $subtitle }}</p>
+        @endif
+      </div>
+
+      <form id="rsvp-form-{{ $section->id }}" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+          <input type="text" name="guest_name" required
+                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
+          <input type="tel" name="guest_phone"
+                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" name="guest_email"
+                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Kehadiran *</label>
+          <select name="attendance_status" required
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+            <option value="">Pilih Status</option>
+            <option value="hadir">Hadir</option>
+            <option value="tidak_hadir">Tidak Hadir</option>
+            <option value="ragu">Masih Ragu</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Tamu *</label>
+          <input type="number" name="number_of_guests" min="1" value="1" required
+                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
+          <textarea name="message" rows="3"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"></textarea>
+        </div>
+
+        <button type="submit" class="rsvp-button w-full py-3 rounded-lg font-semibold transition">
+          {{ $buttonText }}
+        </button>
+      </form>
+
+      <div id="rsvp-success-{{ $section->id }}" class="hidden mt-4 p-4 bg-green-100 text-green-700 rounded-lg text-center">
+        {{ $successMessage }}
+      </div>
+    </div>
+  </div>
+</section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('rsvp-form-{{ $section->id }}');
+  const successDiv = document.getElementById('rsvp-success-{{ $section->id }}');
+  const sectionId = '{{ $section->id }}';
+  const pageSlug = '{{ $page->slug ?? '' }}';
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch(`/invitation/${pageSlug}/rsvp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        form.classList.add('hidden');
+        successDiv.classList.remove('hidden');
+
+        @if($whatsappEnabled && $whatsappPhone)
+          // Forward to WhatsApp
+          const whatsappMessage = `RSVP dari ${data.guest_name}%0AStatus: ${data.attendance_status}%0AJumlah: ${data.number_of_guests}%0APesan: ${data.message || '-'}`;
+          window.open(`https://wa.me/{{ $whatsappPhone }}?text=${whatsappMessage}`, '_blank');
+        @endif
+      } else {
+        alert('Terjadi kesalahan. Silakan coba lagi.');
+      }
+    } catch (error) {
+      console.error('RSVP error:', error);
+      alert('Terjadi kesalahan. Silakan coba lagi.');
+    }
+  });
+});
+</script>
+@endpush

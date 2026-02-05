@@ -385,10 +385,149 @@
                 <div class="p-4">
                     <h3 class="font-semibold text-gray-900 mb-4" x-text="componentSchemas[selectedSection?.section_type]?.name"></h3>
 
-                    <!-- Dynamic properties will be rendered here -->
+                    <!-- Dynamic properties rendering -->
                     <div class="space-y-4">
-                        <p class="text-sm text-gray-500">Properties panel content will be dynamically rendered based on component schema.</p>
-                        <pre class="text-xs bg-gray-50 p-3 rounded overflow-auto max-h-96" x-text="JSON.stringify(selectedSection?.props, null, 2)"></pre>
+                        <template x-for="(field, key) in getFieldsForTab(currentTab)" :key="key">
+                            <!-- Text input -->
+                            <template x-if="field.type === 'text' || field.type === 'date' || field.type === 'datetime'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
+                                    <input :type="field.type"
+                                           :value="selectedSection?.props?.[key]"
+                                           @input="updateProperty(key, $event.target.value)"
+                                           :placeholder="field.placeholder"
+                                           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm">
+                                </div>
+                            </template>
+
+                            <!-- Textarea -->
+                            <template x-if="field.type === 'textarea'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
+                                    <textarea :value="selectedSection?.props?.[key]"
+                                              @input="updateProperty(key, $event.target.value)"
+                                              rows="4"
+                                              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm"></textarea>
+                                </div>
+                            </template>
+
+                            <!-- Color picker -->
+                            <template x-if="field.type === 'color'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
+                                    <div class="flex gap-2">
+                                        <input type="color"
+                                               :value="selectedSection?.props?.[key] || field.default"
+                                               @input="updateProperty(key, $event.target.value)"
+                                               class="w-12 h-10 rounded border cursor-pointer">
+                                        <input type="text"
+                                               :value="selectedSection?.props?.[key] || field.default"
+                                               @input="updateProperty(key, $event.target.value)"
+                                               class="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 text-sm"
+                                               placeholder="#000000">
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Slider -->
+                            <template x-if="field.type === 'slider'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        <span x-text="field.label"></span>
+                                        <span class="text-gray-500 ml-1" x-text="(selectedSection?.props?.[key] || field.default) + (field.unit || '')"></span>
+                                    </label>
+                                    <input type="range"
+                                           :min="field.min"
+                                           :max="field.max"
+                                           :value="selectedSection?.props?.[key] || field.default"
+                                           @input="updateProperty(key, parseInt($event.target.value))"
+                                           class="w-full">
+                                </div>
+                            </template>
+
+                            <!-- Select -->
+                            <template x-if="field.type === 'select'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
+                                    <select :value="selectedSection?.props?.[key] || field.default"
+                                            @change="updateProperty(key, $event.target.value)"
+                                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500 text-sm">
+                                        <template x-for="option in field.options" :key="option.value">
+                                            <option :value="option.value" x-text="option.label"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </template>
+
+                            <!-- Radio (regular) -->
+                            <template x-if="field.type === 'radio'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" x-text="field.label"></label>
+                                    <div class="space-y-2">
+                                        <template x-for="option in field.options" :key="option.value">
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio"
+                                                       :name="key"
+                                                       :value="option.value"
+                                                       :checked="(selectedSection?.props?.[key] || field.default) === option.value"
+                                                       @change="updateProperty(key, option.value)"
+                                                       class="text-yellow-500 focus:ring-yellow-500">
+                                                <span class="text-sm" x-text="option.label"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Radio icon (alignment) -->
+                            <template x-if="field.type === 'radio-icon'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" x-text="field.label"></label>
+                                    <div class="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                                        <template x-for="option in field.options" :key="option">
+                                            <button @click="updateProperty(key, option)"
+                                                    :class="(selectedSection?.props?.[key] || field.default) === option ? 'bg-white shadow' : ''"
+                                                    class="flex-1 py-2 px-3 rounded text-sm transition">
+                                                <span x-show="option === 'left'">← Left</span>
+                                                <span x-show="option === 'center'">↔ Center</span>
+                                                <span x-show="option === 'right'">→ Right</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Boolean/Checkbox -->
+                            <template x-if="field.type === 'boolean'">
+                                <div>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox"
+                                               :checked="selectedSection?.props?.[key] || field.default"
+                                               @change="updateProperty(key, $event.target.checked)"
+                                               class="w-4 h-4 text-yellow-500 rounded focus:ring-yellow-500">
+                                        <span class="text-sm font-medium text-gray-700" x-text="field.label"></span>
+                                    </label>
+                                </div>
+                            </template>
+
+                            <!-- Media picker -->
+                            <template x-if="field.type === 'media'">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
+                                    <div class="flex gap-2">
+                                        <input type="text"
+                                               :value="selectedSection?.props?.[key] || ''"
+                                               @input="updateProperty(key, $event.target.value)"
+                                               :placeholder="'Select ' + field.label.toLowerCase()"
+                                               class="flex-1 px-3 py-2 border rounded-lg text-sm">
+                                        <button type="button" @click="openMediaPicker(key)"
+                                                class="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">
+                                            Browse
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -429,6 +568,8 @@ function invitationEditor() {
         saving: false,
         lastSaved: null,
         componentSchemas: window.componentSchemas || {},
+        saveTimeout: null,
+        currentMediaPickerProperty: null,
 
         async init() {
             await this.loadPageData();
@@ -617,6 +758,59 @@ function invitationEditor() {
         async saveAndClose() {
             await this.saveSections();
             window.location.href = '/admin/invitations';
+        },
+
+        // Get fields for the current tab
+        getFieldsForTab(tabName) {
+            if (!this.selectedSection) return {};
+
+            const schema = this.componentSchemas[this.selectedSection.section_type];
+            if (!schema || !schema.fields) return {};
+
+            // If no tabs defined or tab is "Settings", return all fields
+            if (!schema.tabs || tabName === 'Settings') {
+                return schema.fields;
+            }
+
+            // Filter fields based on tab (currently simple implementation)
+            // In future, fields could have a 'tab' property
+            return schema.fields;
+        },
+
+        // Update a single property with debounced save
+        updateProperty(key, value) {
+            if (!this.selectedSection) return;
+
+            // Ensure props object exists
+            if (!this.selectedSection.props) {
+                this.selectedSection.props = {};
+            }
+
+            // Update the property
+            this.selectedSection.props[key] = value;
+
+            // Trigger debounced save
+            this.debouncedSave();
+        },
+
+        // Open media picker modal
+        openMediaPicker(propertyKey) {
+            this.currentMediaPickerProperty = propertyKey;
+
+            // For now, just open the media library in a popup
+            // In production, this would load the media library in an iframe
+            const mediaPicker = document.getElementById('media-picker-modal');
+            if (mediaPicker) {
+                mediaPicker.classList.remove('hidden');
+            }
+        },
+
+        // Debounced save to avoid excessive API calls
+        debouncedSave() {
+            clearTimeout(this.saveTimeout);
+            this.saveTimeout = setTimeout(() => {
+                this.saveSections();
+            }, 1000);
         },
 
         formatTime(date) {
