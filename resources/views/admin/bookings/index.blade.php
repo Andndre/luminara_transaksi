@@ -21,15 +21,15 @@
                             <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                 <a href="{{ route('admin.bookings.index', ['sort' => 'created_at', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="flex items-center gap-1 hover:text-gray-700">
                                     Tgl Booking
-                                    @if(request('sort') == 'created_at')
-                                        <span>{{ request('direction') == 'asc' ? '↑' : '↓' }}</span>
+                                    @if(request('sort', 'created_at') == 'created_at')
+                                        <span>{{ request('direction', 'desc') == 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </a>
                             </th>
                             <th class="py-4 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                 <a href="{{ route('admin.bookings.index', ['sort' => 'event_date', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="flex items-center gap-1 hover:text-gray-700">
                                     Tgl Event
-                                    @if(request('sort', 'event_date') == 'event_date')
+                                    @if(request('sort') == 'event_date')
                                         <span>{{ request('direction', 'desc') == 'asc' ? '↑' : '↓' }}</span>
                                     @endif
                                 </a>

@@ -328,12 +328,12 @@ class BookingController extends Controller
     // Admin: List Bookings
     public function adminIndex(Request $request)
     {
-        $sort = $request->query('sort', 'event_date');
+        $sort = $request->query('sort', 'created_at');
         $direction = $request->query('direction', 'desc');
 
         // Allow only specific columns for sorting to prevent SQL injection
         if (!in_array($sort, ['event_date', 'created_at'])) {
-            $sort = 'event_date';
+            $sort = 'created_at';
         }
 
         $query = Booking::orderBy($sort, $direction);
