@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -12,8 +13,12 @@ class UserController extends Controller
 {
     public function index()
     {
+        // Get current user ID and fetch user
+        $currentUserId = Auth::id();
+        $currentUser = User::find($currentUserId);
+
         // Prevent non-super-admin from accessing this via URL hacking
-        if (auth()->user()->division !== 'super_admin') {
+        if ($currentUser->division !== 'super_admin') {
             abort(403, 'Unauthorized action.');
         }
 
@@ -23,7 +28,10 @@ class UserController extends Controller
 
     public function create()
     {
-        if (auth()->user()->division !== 'super_admin') {
+        $currentUserId = Auth::id();
+        $currentUser = User::find($currentUserId);
+
+        if ($currentUser->division !== 'super_admin') {
             abort(403, 'Unauthorized action.');
         }
         return view('admin.users.create');
@@ -31,7 +39,10 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->division !== 'super_admin') {
+        $currentUserId = Auth::id();
+        $currentUser = User::find($currentUserId);
+
+        if ($currentUser->division !== 'super_admin') {
             abort(403, 'Unauthorized action.');
         }
 
@@ -54,7 +65,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (auth()->user()->division !== 'super_admin') {
+        $currentUserId = Auth::id();
+        $currentUser = User::find($currentUserId);
+
+        if ($currentUser->division !== 'super_admin') {
             abort(403, 'Unauthorized action.');
         }
         return view('admin.users.edit', compact('user'));
@@ -62,7 +76,10 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if (auth()->user()->division !== 'super_admin') {
+        $currentUserId = Auth::id();
+        $currentUser = User::find($currentUserId);
+
+        if ($currentUser->division !== 'super_admin') {
             abort(403, 'Unauthorized action.');
         }
 
@@ -90,11 +107,14 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if (auth()->user()->division !== 'super_admin') {
+        $currentUserId = Auth::id();
+        $currentUser = User::find($currentUserId);
+
+        if ($currentUser->division !== 'super_admin') {
             abort(403, 'Unauthorized action.');
         }
 
-        if ($user->id === auth()->id()) {
+        if ($user->id === $currentUserId) {
             return back()->withErrors(['error' => 'Anda tidak bisa menghapus akun sendiri.']);
         }
 

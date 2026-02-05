@@ -31,7 +31,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/bookings/{id}', [BookingController::class, 'adminUpdate'])->name('admin.bookings.update');
     Route::delete('/bookings/{id}', [BookingController::class, 'adminDestroy'])->name('admin.bookings.destroy');
     Route::patch('/bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('admin.bookings.update-status');
-    
+
     // Invoice Management Routes
     Route::get('/invoices', [\App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('admin.invoices.index');
     Route::get('/invoices/create', [\App\Http\Controllers\Admin\InvoiceController::class, 'create'])->name('admin.invoices.create');
@@ -43,10 +43,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/invoices/{invoice}/edit', [\App\Http\Controllers\Admin\InvoiceController::class, 'edit'])->name('admin.invoices.edit');
     Route::put('/invoices/{invoice}', [\App\Http\Controllers\Admin\InvoiceController::class, 'update'])->name('admin.invoices.update');
     Route::get('/invoices/{invoice}/print', [\App\Http\Controllers\Admin\InvoiceController::class, 'print'])->name('admin.invoices.print');
-    
+
     // Finance Route
     Route::get('/finance', [\App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('admin.finance.index');
-    
+
     // Calendar Routes
     Route::get('/calendar', [BookingController::class, 'calendarIndex'])->name('admin.calendar.index');
     Route::post('/calendar/block', [BookingController::class, 'blockDate'])->name('admin.calendar.block');
