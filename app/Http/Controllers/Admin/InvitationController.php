@@ -74,6 +74,22 @@ class InvitationController extends Controller
             'created_by' => $currentUserId,
         ]);
 
+        // Duplicate sections from template if selected
+        if ($request->template_id) {
+            $template = \App\Models\InvitationTemplate::find($request->template_id);
+            if ($template && $template->sections()->count() > 0) {
+                foreach ($template->sections as $section) {
+                    $invitation->sections()->create([
+                        'section_type' => $section->section_type,
+                        'order_index' => $section->order_index,
+                        'props' => $section->props,
+                        'custom_css' => $section->custom_css,
+                        'is_visible' => $section->is_visible,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('admin.invitations.editor', $invitation->id)
             ->with('success', 'Undangan berhasil dibuat. Silakan edit dengan visual editor.');
     }

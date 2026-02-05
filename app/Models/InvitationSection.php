@@ -8,6 +8,7 @@ class InvitationSection extends Model
 {
     protected $fillable = [
         'page_id',
+        'template_id',
         'parent_id',
         'section_type',
         'order_index',
@@ -24,6 +25,11 @@ class InvitationSection extends Model
     public function page()
     {
         return $this->belongsTo(InvitationPage::class);
+    }
+
+    public function template()
+    {
+        return $this->belongsTo(InvitationTemplate::class);
     }
 
     public function parent()

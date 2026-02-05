@@ -57,14 +57,21 @@ use Illuminate\Support\Facades\Storage;
 
                         <!-- Actions -->
                         <div class="space-y-2">
-                            <a href="{{ route('admin.templates.edit', $template->id) }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-500 text-black font-medium rounded-lg hover:bg-yellow-600 transition">
+                            <a href="{{ route('admin.templates.editor', $template->id) }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-500 text-black font-medium rounded-lg hover:bg-yellow-600 transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
-                                Edit Template
+                                Edit with Visual Editor
                             </a>
 
                             <div class="flex gap-2">
+                                <a href="{{ route('admin.templates.edit', $template->id) }}" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="MM11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-3m0 0V5a2 2 0 012-2h6a2 2 0 012 2v14a2 2 0 002 2H8a2 2 0 01-2-2V9a2 2 0 012-2z"/>
+                                    </svg>
+                                    Edit Info
+                                </a>
+
                                 <form action="{{ route('admin.templates.duplicate', $template->id) }}" method="POST" class="flex-1">
                                     @csrf
                                     <button type="submit" class="w-full flex items-center justify-center gap-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">

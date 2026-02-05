@@ -65,6 +65,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Invitation Templates Routes
     Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->names('admin.templates');
     Route::post('/templates/{id}/duplicate', [\App\Http\Controllers\Admin\TemplateController::class, 'duplicate'])->name('admin.templates.duplicate');
+    Route::get('/templates/{id}/editor', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'editor'])->name('admin.templates.editor');
+    Route::post('/templates/{id}/publish', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'publish'])->name('admin.templates.publish');
 
     // Invitations Routes
     Route::resource('invitations', \App\Http\Controllers\Admin\InvitationController::class)->names('admin.invitations');
@@ -76,6 +78,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // API Routes for Visual Editor
     Route::prefix('api')->name('api.')->group(function () {
+        // Templates API
+        Route::get('/templates/{id}/load', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'load']);
+
         // Invitations API
         Route::get('/invitations/{id}/load', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'load']);
 
