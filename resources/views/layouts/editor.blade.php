@@ -20,6 +20,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- Component Schemas -->
+    <script src="{{ asset('js/component-schemas.js') }}"></script>
     @stack('styles')
 </head>
 <body class="bg-gray-100 overflow-hidden">
