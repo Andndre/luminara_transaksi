@@ -122,4 +122,13 @@ class TemplateEditorController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Template published']);
     }
+
+    public function preview($id)
+    {
+        $template = InvitationTemplate::with(['sections' => function ($query) {
+            $query->orderBy('order_index');
+        }])->findOrFail($id);
+
+        return view('admin.templates.preview', compact('template'));
+    }
 }

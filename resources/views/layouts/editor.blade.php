@@ -125,17 +125,44 @@
 
         // Preview function
         function openPreview() {
-            const slug = '{{ $invitation->slug ?? $template->slug ?? '' }}';
-            if (slug) {
-                window.open(`/invitation/${slug}?preview=true`, '_blank');
+            const isTemplate = '{{ request()->routeIs('admin.templates.*') ? 'true' : 'false' }}' === 'true';
+            const slug = '{{ $invitation->slug ?? '' }}';
+            const templateId = '{{ $template->id ?? '' }}';
+
+            if (isTemplate) {
+                // For templates, open preview in new tab with template ID
+                if (templateId) {
+                    window.open(`/admin/templates/${templateId}/preview`, '_blank');
+                } else {
+                    Swal.fire('Info', 'Simpan template dulu untuk preview', 'info');
+                }
             } else {
-                Swal.fire('Info', 'Simpan dulu untuk preview', 'info');
+                // For invitations, use slug-based preview
+                if (slug) {
+                    window.open(`/invitation/${slug}?preview=true`, '_blank');
+                } else {
+                    Swal.fire('Info', 'Simpan undangan dulu untuk preview', 'info');
+                }
             }
         }
 
         // Save function - dispatches event for Alpine component to handle
         function saveAll() {
+            // Show saving indicator
+            const saveText = document.getElementById('save-text');
+            if (saveText) {
+                saveText.textContent = 'Menyimpan...';
+            }
+
+            // Dispatch event
             window.dispatchEvent(new CustomEvent('editor-save'));
+
+            // Reset text after delay (Alpine component will update this)
+            setTimeout(() => {
+                if (saveText) {
+                    saveText.textContent = 'Simpan';
+                }
+            }, 2000);
         }
     </script>
 
