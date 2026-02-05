@@ -2,6 +2,10 @@
 
 @section('title', 'Buat Undangan Baru')
 
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 <div class="p-6 max-w-4xl mx-auto">
     <div class="mb-6">
@@ -43,7 +47,7 @@
                             <div class="border-2 rounded-xl p-4 text-center peer-checked:border-yellow-500 peer-checked:bg-yellow-50 transition">
                                 @if($template->thumbnail)
                                     <div class="aspect-[3/4] bg-gray-100 rounded-lg mb-3 overflow-hidden">
-                                        <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ Storage::url($template->thumbnail) }}" alt="{{ $template->name }}" class="w-full h-full object-cover">
                                     </div>
                                 @else
                                     <div class="aspect-[3/4] bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg mb-3 flex items-center justify-center">

@@ -2,6 +2,10 @@
 
 @section('title', 'Templates')
 
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 <div class="p-6">
     <div class="flex justify-between items-center mb-6">
@@ -24,7 +28,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
                     <div class="aspect-[3/4] bg-gray-100">
                         @if($template->thumbnail)
-                            <img src="{{ $template->thumbnail }}" alt="{{ $template->name }}" class="w-full h-full object-cover">
+                            <img src="{{ Storage::url($template->thumbnail) }}" alt="{{ $template->name }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-yellow-100 to-yellow-200">
                                 <svg class="w-16 h-16 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

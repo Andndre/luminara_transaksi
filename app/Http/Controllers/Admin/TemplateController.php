@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InvitationTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TemplateController extends Controller
 {
@@ -46,12 +47,21 @@ class TemplateController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:invitation_templates',
+            'thumbnail' => 'nullable|image|max:5120', // Max 5MB
         ]);
+
+        // Handle thumbnail upload
+        $thumbnailPath = null;
+        if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $thumbnailPath = $file->storeAs('templates/thumbnails', $fileName, 'public');
+        }
 
         InvitationTemplate::create([
             'name' => $request->name,
             'slug' => $request->slug,
-            'thumbnail' => $request->thumbnail,
+            'thumbnail' => $thumbnailPath,
             'description' => $request->description,
             'category' => $request->category,
             'is_active' => $request->is_active ?? true,
@@ -88,12 +98,26 @@ class TemplateController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:invitation_templates,slug,' . $id,
+            'thumbnail' => 'nullable|image|max:5120', // Max 5MB
         ]);
+
+        // Handle thumbnail upload
+        $thumbnailPath = $template->thumbnail; // Keep existing if no new file
+        if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail if exists
+            if ($template->thumbnail && Storage::disk('public')->exists($template->thumbnail)) {
+                Storage::disk('public')->delete($template->thumbnail);
+            }
+
+            $file = $request->file('thumbnail');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $thumbnailPath = $file->storeAs('templates/thumbnails', $fileName, 'public');
+        }
 
         $template->update([
             'name' => $request->name,
             'slug' => $request->slug,
-            'thumbnail' => $request->thumbnail,
+            'thumbnail' => $thumbnailPath,
             'description' => $request->description,
             'category' => $request->category,
             'is_active' => $request->is_active ?? true,
