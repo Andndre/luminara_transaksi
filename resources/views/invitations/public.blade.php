@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $page->title ?? 'Wedding Invitation' }}</title>
+    <meta name="description" content="{{ $page->groom_name ?? '' }} & {{ $page->bride_name ?? '' }}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c9a227;
+        }
+    </style>
+
+    @stack('rsvp_styles')
+</head>
+<body class="bg-white">
+    <!-- Invitation Content -->
+    <main>
+        {!! $content ?? '' !!}
+    </main>
+
+    <!-- Footer -->
+    @if($page->template)
+    <footer class="py-8 text-center text-gray-600 text-sm">
+        <p>Created with love using Luminara Photobooth</p>
+        <p class="mt-1">
+            <a href="https://luminaraphotobooth.com" class="text-yellow-600 hover:text-yellow-700">Create your invitation</a>
+        </p>
+    </footer>
+    @endif
+
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @stack('scripts')
+</body>
+</html>

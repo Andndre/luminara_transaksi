@@ -191,6 +191,10 @@
 @endpush
 
 @section('content')
+<script>
+    window.pageId = {{ $page->id ?? 0 }};
+</script>
+
 <div x-data="invitationEditor()" x-init="init()" class="h-full flex flex-col">
     <!-- Editor Header -->
     <div class="editor-toolbar flex items-center justify-between">
