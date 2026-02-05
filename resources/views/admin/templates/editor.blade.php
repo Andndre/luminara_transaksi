@@ -251,7 +251,7 @@
                             <template x-for="componentType in category.components" :key="componentType">
                                 <div x-show="window.componentSchemas[componentType]"
                                      class="component-item flex items-center gap-3 p-2 rounded-lg hover:bg-yellow-50 cursor-pointer transition"
-                                     @click="$root.addComponent(componentType)">
+                                     @click="window.templateEditorAddComponent(componentType)">
                                     <div class="w-8 h-8 rounded bg-yellow-50 flex items-center justify-center shrink-0">
                                         <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <!-- Icons for different components -->
@@ -402,6 +402,9 @@ function templateEditor() {
         async init() {
             await this.loadTemplateData();
             this.initSortable();
+
+            // Store reference to addComponent for global access
+            window.templateEditorAddComponent = (type) => this.addComponent(type);
 
             // Listen for save event from layout
             window.addEventListener('editor-save', () => {
