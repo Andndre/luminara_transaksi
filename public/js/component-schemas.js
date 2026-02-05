@@ -1219,3 +1219,7 @@ const componentSchemas = {
         }
     }
 };
+
+// Export to window for Alpine.js access
+window.componentCategories = componentCategories;
+window.componentSchemas = componentSchemas;
