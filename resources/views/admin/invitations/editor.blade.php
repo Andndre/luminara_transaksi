@@ -242,9 +242,9 @@
                         <!-- Category Items -->
                         <div x-show="open" x-collapse class="p-2 space-y-1">
                             <template x-for="componentType in category.components" :key="componentType">
-                                <div x-show="componentSchemas[componentType]"
+                                <div x-show="window.componentSchemas[componentType]"
                                      class="component-item flex items-center gap-3 p-2 rounded-lg hover:bg-yellow-50 cursor-pointer transition"
-                                     @click="addComponent(componentType)">
+                                     @click="$root.addComponent(componentType)">
                                     <div class="w-8 h-8 rounded bg-yellow-50 flex items-center justify-center shrink-0">
                                         <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <!-- Icons for different components -->
@@ -262,7 +262,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="font-medium text-sm text-gray-900 truncate" x-text="componentSchemas[componentType]?.name"></p>
+                                        <p class="font-medium text-sm text-gray-900 truncate" x-text="window.componentSchemas[componentType]?.name"></p>
                                         <p class="text-xs text-gray-500 truncate" x-text="componentType"></p>
                                     </div>
                                 </div>
