@@ -1,6 +1,35 @@
 // Component Schemas for Visual Invitation Editor
 // Each schema defines the properties that can be configured for each component type
 
+// Component categories for accordion-style sidebar
+const componentCategories = {
+    basic: {
+        name: 'Basic Components',
+        icon: 'square',
+        components: ['hero', 'text', 'image', 'video', 'divider']
+    },
+    countdown: {
+        name: 'Countdown',
+        icon: 'clock',
+        components: ['countdown-classic', 'countdown-modern', 'countdown-elegant', 'countdown-minimal']
+    },
+    rsvp: {
+        name: 'RSVP',
+        icon: 'form',
+        components: ['rsvp-classic', 'rsvp-modern', 'rsvp-elegant', 'rsvp-minimal']
+    },
+    media: {
+        name: 'Media & Interactive',
+        icon: 'photo',
+        components: ['gallery', 'map', 'music']
+    },
+    elements: {
+        name: 'Elements',
+        icon: 'cube',
+        components: ['button']
+    }
+};
+
 const componentSchemas = {
     hero: {
         name: 'Hero Section',
@@ -206,6 +235,211 @@ const componentSchemas = {
         }
     },
 
+    // Countdown Variants
+    'countdown-classic': {
+        name: 'Countdown - Classic',
+        icon: 'clock',
+        category: 'countdown',
+        variant: 'classic',
+        tabs: ['Settings', 'Style'],
+        fields: {
+            target_date: {
+                type: 'datetime',
+                label: 'Target Date & Time'
+            },
+            title: {
+                type: 'text',
+                label: 'Title',
+                default: 'Counting Down To'
+            },
+            theme: { type: 'hidden', default: 'classic' },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#2c3e50'
+            },
+            text_color: {
+                type: 'color',
+                label: 'Text Color',
+                default: '#ffffff'
+            },
+            accent_color: {
+                type: 'color',
+                label: 'Accent Color',
+                default: '#3498db'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 64
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 64
+            }
+        }
+    },
+
+    'countdown-modern': {
+        name: 'Countdown - Modern',
+        icon: 'clock',
+        category: 'countdown',
+        variant: 'modern',
+        tabs: ['Settings', 'Style'],
+        fields: {
+            target_date: {
+                type: 'datetime',
+                label: 'Target Date & Time'
+            },
+            title: {
+                type: 'text',
+                label: 'Title',
+                default: 'Save The Date'
+            },
+            theme: { type: 'hidden', default: 'modern' },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#ffffff'
+            },
+            text_color: {
+                type: 'color',
+                label: 'Text Color',
+                default: '#1a1a1a'
+            },
+            accent_color: {
+                type: 'color',
+                label: 'Accent Color',
+                default: '#ff6b6b'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 80
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 80
+            }
+        }
+    },
+
+    'countdown-elegant': {
+        name: 'Countdown - Elegant',
+        icon: 'clock',
+        category: 'countdown',
+        variant: 'elegant',
+        tabs: ['Settings', 'Style'],
+        fields: {
+            target_date: {
+                type: 'datetime',
+                label: 'Target Date & Time'
+            },
+            title: {
+                type: 'text',
+                label: 'Title',
+                default: 'Until Our Special Day'
+            },
+            theme: { type: 'hidden', default: 'elegant' },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#fef3e2'
+            },
+            text_color: {
+                type: 'color',
+                label: 'Text Color',
+                default: '#4a4a4a'
+            },
+            accent_color: {
+                type: 'color',
+                label: 'Accent Color',
+                default: '#d4af37'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 64
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 64
+            }
+        }
+    },
+
+    'countdown-minimal': {
+        name: 'Countdown - Minimal',
+        icon: 'clock',
+        category: 'countdown',
+        variant: 'minimal',
+        tabs: ['Settings', 'Style'],
+        fields: {
+            target_date: {
+                type: 'datetime',
+                label: 'Target Date & Time'
+            },
+            title: {
+                type: 'text',
+                label: 'Title',
+                default: 'Coming Soon'
+            },
+            theme: { type: 'hidden', default: 'minimal' },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#fafafa'
+            },
+            text_color: {
+                type: 'color',
+                label: 'Text Color',
+                default: '#333333'
+            },
+            accent_color: {
+                type: 'color',
+                label: 'Accent Color',
+                default: '#666666'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 48
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 48
+            }
+        }
+    },
+
     rsvp: {
         name: 'RSVP Form',
         icon: 'form',
@@ -266,6 +500,290 @@ const componentSchemas = {
                 max: 150,
                 unit: 'px',
                 default: 80
+            }
+        }
+    },
+
+    // RSVP Variants
+    'rsvp-classic': {
+        name: 'RSVP - Classic',
+        icon: 'form',
+        category: 'rsvp',
+        variant: 'classic',
+        tabs: ['Fields', 'Button', 'Settings'],
+        fields: {
+            title: {
+                type: 'text',
+                label: 'Form Title',
+                default: 'RSVP'
+            },
+            subtitle: {
+                type: 'text',
+                label: 'Subtitle',
+                default: 'Please respond by [date]'
+            },
+            design: { type: 'hidden', default: 'classic' },
+            button_text: {
+                type: 'text',
+                label: 'Button Text',
+                default: 'Submit RSVP'
+            },
+            button_color: {
+                type: 'color',
+                label: 'Button Color',
+                default: '#2c3e50'
+            },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#ecf0f1'
+            },
+            border_color: {
+                type: 'color',
+                label: 'Border Color',
+                default: '#bdc3c7'
+            },
+            success_message: {
+                type: 'textarea',
+                label: 'Success Message',
+                default: 'Thank you for your response!'
+            },
+            whatsapp_enabled: {
+                type: 'boolean',
+                label: 'Forward to WhatsApp',
+                default: false
+            },
+            whatsapp_phone: {
+                type: 'text',
+                label: 'WhatsApp Number',
+                placeholder: '628123456789'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 80
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 80
+            }
+        }
+    },
+
+    'rsvp-modern': {
+        name: 'RSVP - Modern',
+        icon: 'form',
+        category: 'rsvp',
+        variant: 'modern',
+        tabs: ['Fields', 'Button', 'Settings'],
+        fields: {
+            title: {
+                type: 'text',
+                label: 'Form Title',
+                default: 'Will You Attend?'
+            },
+            subtitle: {
+                type: 'text',
+                label: 'Subtitle',
+                default: 'Let us know if you can make it'
+            },
+            design: { type: 'hidden', default: 'modern' },
+            button_text: {
+                type: 'text',
+                label: 'Button Text',
+                default: 'Send Response'
+            },
+            button_color: {
+                type: 'color',
+                label: 'Button Color',
+                default: '#ff6b6b'
+            },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#ffffff'
+            },
+            accent_color: {
+                type: 'color',
+                label: 'Accent Color',
+                default: '#ff6b6b'
+            },
+            success_message: {
+                type: 'textarea',
+                label: 'Success Message',
+                default: 'Got it! Thanks for responding.'
+            },
+            whatsapp_enabled: {
+                type: 'boolean',
+                label: 'Forward to WhatsApp',
+                default: false
+            },
+            whatsapp_phone: {
+                type: 'text',
+                label: 'WhatsApp Number',
+                placeholder: '628123456789'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 80
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 80
+            }
+        }
+    },
+
+    'rsvp-elegant': {
+        name: 'RSVP - Elegant',
+        icon: 'form',
+        category: 'rsvp',
+        variant: 'elegant',
+        tabs: ['Fields', 'Button', 'Settings'],
+        fields: {
+            title: {
+                type: 'text',
+                label: 'Form Title',
+                default: 'R.S.V.P'
+            },
+            subtitle: {
+                type: 'text',
+                label: 'Subtitle',
+                default: 'Kindly respond by [date]'
+            },
+            design: { type: 'hidden', default: 'elegant' },
+            button_text: {
+                type: 'text',
+                label: 'Button Text',
+                default: 'Confirm Attendance'
+            },
+            button_color: {
+                type: 'color',
+                label: 'Button Color',
+                default: '#d4af37'
+            },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#fef8f0'
+            },
+            border_color: {
+                type: 'color',
+                label: 'Border Color',
+                default: '#d4af37'
+            },
+            success_message: {
+                type: 'textarea',
+                label: 'Success Message',
+                default: 'Thank you for your gracious response.'
+            },
+            whatsapp_enabled: {
+                type: 'boolean',
+                label: 'Forward to WhatsApp',
+                default: false
+            },
+            whatsapp_phone: {
+                type: 'text',
+                label: 'WhatsApp Number',
+                placeholder: '628123456789'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 100
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 100
+            }
+        }
+    },
+
+    'rsvp-minimal': {
+        name: 'RSVP - Minimal',
+        icon: 'form',
+        category: 'rsvp',
+        variant: 'minimal',
+        tabs: ['Fields', 'Button', 'Settings'],
+        fields: {
+            title: {
+                type: 'text',
+                label: 'Form Title',
+                default: 'RSVP'
+            },
+            subtitle: {
+                type: 'text',
+                label: 'Subtitle',
+                default: ''
+            },
+            design: { type: 'hidden', default: 'minimal' },
+            button_text: {
+                type: 'text',
+                label: 'Button Text',
+                default: 'Submit'
+            },
+            button_color: {
+                type: 'color',
+                label: 'Button Color',
+                default: '#333333'
+            },
+            background_color: {
+                type: 'color',
+                label: 'Background Color',
+                default: '#ffffff'
+            },
+            success_message: {
+                type: 'textarea',
+                label: 'Success Message',
+                default: 'Thanks!'
+            },
+            whatsapp_enabled: {
+                type: 'boolean',
+                label: 'Forward to WhatsApp',
+                default: false
+            },
+            whatsapp_phone: {
+                type: 'text',
+                label: 'WhatsApp Number',
+                placeholder: '628123456789'
+            },
+            padding_top: {
+                type: 'slider',
+                label: 'Padding Top',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 60
+            },
+            padding_bottom: {
+                type: 'slider',
+                label: 'Padding Bottom',
+                min: 0,
+                max: 150,
+                unit: 'px',
+                default: 60
             }
         }
     },
