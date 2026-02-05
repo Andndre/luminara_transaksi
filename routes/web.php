@@ -61,6 +61,36 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Gallery Routes
     Route::post('/galleries/{gallery}/toggle-featured', [\App\Http\Controllers\Admin\GalleryController::class, 'toggleFeatured'])->name('admin.galleries.toggle-featured');
     Route::resource('galleries', \App\Http\Controllers\Admin\GalleryController::class)->names('admin.galleries');
+
+    // Invitation Templates Routes
+    Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->names('admin.templates');
+    Route::post('/templates/{id}/duplicate', [\App\Http\Controllers\Admin\TemplateController::class, 'duplicate'])->name('admin.templates.duplicate');
+
+    // Invitations Routes
+    Route::resource('invitations', \App\Http\Controllers\Admin\InvitationController::class)->names('admin.invitations');
+    Route::get('/invitations/{id}/editor', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'editor'])->name('admin.invitations.editor');
+    Route::post('/invitations/{id}/publish', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'publish'])->name('admin.invitations.publish');
+
+    // Media Library Routes
+    Route::get('/assets', [\App\Http\Controllers\Admin\InvitationAssetController::class, 'indexView'])->name('admin.assets.index');
+
+    // API Routes for Visual Editor
+    Route::prefix('api')->name('api.')->group(function () {
+        // Invitations API
+        Route::get('/invitations/{id}/load', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'load']);
+
+        // Sections API
+        Route::post('/sections', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'saveSection']);
+        Route::put('/sections/{id}', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'updateSection']);
+        Route::delete('/sections/{id}', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'deleteSection']);
+        Route::post('/sections/reorder', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'reorderSections']);
+
+        // Assets API
+        Route::get('/assets', [\App\Http\Controllers\Admin\InvitationAssetController::class, 'index']);
+        Route::post('/assets/upload', [\App\Http\Controllers\Admin\InvitationAssetController::class, 'upload']);
+        Route::delete('/assets/{id}', [\App\Http\Controllers\Admin\InvitationAssetController::class, 'destroy']);
+        Route::put('/assets/{id}', [\App\Http\Controllers\Admin\InvitationAssetController::class, 'update']);
+    });
 });
 
 // Legacy Midtrans Routes
@@ -70,3 +100,7 @@ Route::get('/payment-finish', function () {
 Route::get('/payment-failed', function () {
     return view('payment_failed');
 });
+
+// Public Invitation Routes
+Route::get('/invitation/{slug}', [\App\Http\Controllers\InvitationViewController::class, 'show'])->name('invitation.show');
+Route::post('/invitation/{slug}/rsvp', [\App\Http\Controllers\InvitationViewController::class, 'rsvp'])->name('invitation.rsvp');
