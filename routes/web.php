@@ -82,11 +82,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::prefix('api')->name('api.')->group(function () {
         // Templates API
         Route::get('/templates/{id}/load', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'load']);
+        Route::post('/templates/sections', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'saveSection'])->name('templates.sections.save');
+        Route::delete('/templates/sections/{id}', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'deleteSection'])->name('templates.sections.delete');
+        Route::post('/templates/sections/reorder', [\App\Http\Controllers\Admin\TemplateEditorController::class, 'reorderSections'])->name('templates.sections.reorder');
 
         // Invitations API
         Route::get('/invitations/{id}/load', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'load']);
 
-        // Sections API
+        // Sections API (for invitations)
         Route::post('/sections', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'saveSection']);
         Route::put('/sections/{id}', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'updateSection']);
         Route::delete('/sections/{id}', [\App\Http\Controllers\Admin\InvitationEditorController::class, 'deleteSection']);

@@ -615,7 +615,7 @@ function templateEditor() {
             }));
 
             try {
-                await fetch('/admin/api/sections/reorder', {
+                await fetch('/admin/api/templates/sections/reorder', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -634,7 +634,7 @@ function templateEditor() {
             if (saveText) saveText.textContent = 'Menyimpan...';
 
             try {
-                const response = await fetch('/admin/api/sections', {
+                const response = await fetch('/admin/api/templates/sections', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -659,8 +659,9 @@ function templateEditor() {
 
                     // Update temp IDs with real IDs from server
                     if (data.sections) {
-                        data.sections.forEach((savedSection, index) => {
-                            if (this.sections[index]?.id?.startsWith('temp-')) {
+                        data.sections.forEach((savedSection) => {
+                            const index = this.sections.findIndex(s => s.id === savedSection.temp_id);
+                            if (index !== -1) {
                                 this.sections[index].id = savedSection.id;
                             }
                         });
