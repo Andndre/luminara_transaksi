@@ -10,6 +10,7 @@ function templateEditor() {
         loading: true,
         saving: false,
         lastSaved: null,
+        hasUnsavedChanges: false,
         componentSchemas: window.componentSchemas || {},
         saveTimeout: null,
         currentMediaPickerProperty: null,
@@ -24,6 +25,14 @@ function templateEditor() {
             // Listen for save event from layout
             window.addEventListener('editor-save', () => {
                 this.saveSections();
+            });
+
+            // Warn before leaving with unsaved changes
+            window.addEventListener('beforeunload', (e) => {
+                if (this.hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
             });
         },
 
@@ -48,8 +57,10 @@ function templateEditor() {
             new Sortable(canvas, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
-                onEnd: (evt) => {
-                    this.reorderSections();
+                onEnd: () => {
+                    // Sync sections array with DOM order
+                    this.reorderSectionsArray();
+                    this.hasUnsavedChanges = true;
                 }
             });
         },
@@ -71,7 +82,7 @@ function templateEditor() {
 
             this.sections.push(newSection);
             this.selectedSection = newSection;
-            await this.saveSections();
+            this.hasUnsavedChanges = true;
         },
 
         getDefaultProps(schema) {
@@ -101,6 +112,7 @@ function templateEditor() {
                 ...this.selectedSection.props,
                 [key]: value
             };
+            this.hasUnsavedChanges = true;
         },
 
         async confirmDeleteSection(section) {
@@ -115,7 +127,7 @@ function templateEditor() {
             });
 
             if (result.isConfirmed) {
-                await this.deleteSection(section.id);
+                this.deleteSection(section.id);
             }
         },
 
@@ -124,7 +136,7 @@ function templateEditor() {
             if (this.selectedSection?.id === sectionId) {
                 this.selectedSection = null;
             }
-            await this.saveSections();
+            this.hasUnsavedChanges = true;
         },
 
         async duplicateSection(section) {
@@ -135,7 +147,7 @@ function templateEditor() {
             };
             this.sections.push(duplicated);
             this.selectedSection = duplicated;
-            await this.saveSections();
+            this.hasUnsavedChanges = true;
         },
 
         async moveSection(index, direction) {
@@ -146,7 +158,31 @@ function templateEditor() {
             this.sections[index] = this.sections[newIndex];
             this.sections[newIndex] = temp;
 
-            await this.reorderSections();
+            this.hasUnsavedChanges = true;
+        },
+
+        // Sync sections array with DOM order after drag-drop
+        reorderSectionsArray() {
+            const canvas = document.getElementById('editor-canvas');
+            if (!canvas) return;
+
+            const sectionElements = canvas.querySelectorAll('.section-wrapper');
+            const newOrderIds = Array.from(sectionElements).map(el => {
+                // Get section ID from Alpine data
+                const AlpineData = Alpine.$data(el);
+                return AlpineData.section.id;
+            });
+
+            // Reorder sections array based on DOM order
+            const reorderedSections = [];
+            newOrderIds.forEach(id => {
+                const section = this.sections.find(s => s.id === id);
+                if (section) {
+                    reorderedSections.push(section);
+                }
+            });
+
+            this.sections = reorderedSections;
         },
 
         async reorderSections() {
@@ -191,6 +227,7 @@ function templateEditor() {
 
                 if (data.success) {
                     this.lastSaved = new Date();
+                    this.hasUnsavedChanges = false;
                     if (saveText) {
                         saveText.textContent = 'Tersimpan!';
                         setTimeout(() => {
