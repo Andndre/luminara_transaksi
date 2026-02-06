@@ -48,17 +48,22 @@ class TemplateEditorController extends Controller
 
         $templateId = $request->template_id;
         $sections = $request->sections;
+        $savedSections = [];
 
         foreach ($sections as $sectionData) {
             if (str_starts_with($sectionData['id'], 'temp-')) {
                 // New section
-                InvitationSection::create([
+                $newSection = InvitationSection::create([
                     'template_id' => $templateId,
                     'page_id' => null, // Template sections don't belong to a page
                     'section_type' => $sectionData['section_type'],
                     'order_index' => $sectionData['order_index'],
                     'props' => $sectionData['props'],
                 ]);
+                $savedSections[] = [
+                    'temp_id' => $sectionData['id'],
+                    'id' => $newSection->id
+                ];
             } else {
                 // Update existing section
                 $section = InvitationSection::find($sectionData['id']);
@@ -71,7 +76,11 @@ class TemplateEditorController extends Controller
             }
         }
 
-        return response()->json(['success' => true, 'message' => 'Sections saved']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Sections saved',
+            'sections' => $savedSections
+        ]);
     }
 
     public function updateSection(Request $request, $id)

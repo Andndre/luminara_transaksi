@@ -630,8 +630,11 @@ function templateEditor() {
 
         async saveSections() {
             this.saving = true;
+            const saveText = document.getElementById('save-text');
+            if (saveText) saveText.textContent = 'Menyimpan...';
+
             try {
-                await fetch('/admin/api/sections', {
+                const response = await fetch('/admin/api/sections', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -642,10 +645,38 @@ function templateEditor() {
                         sections: this.sections
                     })
                 });
-                this.lastSaved = new Date();
+
+                const data = await response.json();
+
+                if (data.success) {
+                    this.lastSaved = new Date();
+                    if (saveText) {
+                        saveText.textContent = 'Tersimpan!';
+                        setTimeout(() => {
+                            if (saveText) saveText.textContent = 'Simpan';
+                        }, 2000);
+                    }
+
+                    // Update temp IDs with real IDs from server
+                    if (data.sections) {
+                        data.sections.forEach((savedSection, index) => {
+                            if (this.sections[index]?.id?.startsWith('temp-')) {
+                                this.sections[index].id = savedSection.id;
+                            }
+                        });
+                    }
+                } else {
+                    throw new Error(data.message || 'Save failed');
+                }
             } catch (error) {
                 console.error('Error saving:', error);
-                Swal.fire('Error', 'Failed to save changes', 'error');
+                Swal.fire('Error', 'Gagal menyimpan perubahan', 'error');
+                if (saveText) {
+                    saveText.textContent = 'Gagal';
+                    setTimeout(() => {
+                        if (saveText) saveText.textContent = 'Simpan';
+                    }, 2000);
+                }
             } finally {
                 this.saving = false;
             }
