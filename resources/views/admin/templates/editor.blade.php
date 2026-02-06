@@ -335,11 +335,39 @@
                             </button>
                         </div>
 
-                        <!-- Section preview -->
-                        <div class="section-preview">
-                            <div class="p-4 text-center text-gray-500">
-                                <p class="font-medium" x-text="componentSchemas[section.section_type]?.name || section.section_type"></p>
-                            </div>
+                        <!-- Section preview - Live rendering -->
+                        <div class="section-preview bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <!-- Render component based on type -->
+                            <template x-if="section.section_type === 'text'">
+                                <div class="p-6">
+                                    <template x-if="section.props?.tag === 'h1'">
+                                        <h1 class="text-4xl font-bold" :class="'text-' + (section.props?.align || 'left')" style="font-family: 'Playfair Display', serif;" x-html="section.props?.content || 'Tulis teks anda di sini...'"></h1>
+                                    </template>
+                                    <template x-if="section.props?.tag === 'h2'">
+                                        <h2 class="text-3xl font-bold" :class="'text-' + (section.props?.align || 'left')" style="font-family: 'Playfair Display', serif;" x-html="section.props?.content || 'Tulis teks anda di sini...'"></h2>
+                                    </template>
+                                    <template x-if="section.props?.tag === 'h3'">
+                                        <h3 class="text-2xl font-semibold" :class="'text-' + (section.props?.align || 'left')" style="font-family: 'Playfair Display', serif;" x-html="section.props?.content || 'Tulis teks anda di sini...'"></h3>
+                                    </template>
+                                    <template x-if="section.props?.tag === 'h4'">
+                                        <h4 class="text-xl font-semibold" :class="'text-' + (section.props?.align || 'left')" x-html="section.props?.content || 'Tulis teks anda di sini...'"></h4>
+                                    </template>
+                                    <template x-if="section.props?.tag === 'h5'">
+                                        <h5 class="text-lg font-medium" :class="'text-' + (section.props?.align || 'left')" x-html="section.props?.content || 'Tulis teks anda di sini...'"></h5>
+                                    </template>
+                                    <template x-if="section.props?.tag === 'h6'">
+                                        <h6 class="text-base font-medium" :class="'text-' + (section.props?.align || 'left')" x-html="section.props?.content || 'Tulis teks anda di sini...'"></h6>
+                                    </template>
+                                    <template x-if="!section.props?.tag || section.props?.tag === 'p'">
+                                        <p class="text-base leading-relaxed" :class="'text-' + (section.props?.align || 'left')" x-html="section.props?.content || 'Tulis teks anda di sini...'"></p>
+                                    </template>
+                                </div>
+                            </template>
+                            <template x-if="section.section_type !== 'text'">
+                                <div class="p-4 text-center text-gray-500">
+                                    <p class="font-medium" x-text="componentSchemas[section.section_type]?.name || section.section_type"></p>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </template>
@@ -371,10 +399,56 @@
                 <div class="p-4">
                     <h3 class="font-semibold text-gray-900 mb-4" x-text="componentSchemas[selectedSection?.section_type]?.name"></h3>
 
-                    <!-- Dynamic properties will be rendered here -->
+                    <!-- Dynamic properties based on schema -->
                     <div class="space-y-4">
-                        <p class="text-sm text-gray-500">Properties panel content will be dynamically rendered based on component schema.</p>
-                        <pre class="text-xs bg-gray-50 p-3 rounded overflow-auto max-h-96" x-text="JSON.stringify(selectedSection?.props, null, 2)"></pre>
+                        <template x-for="(field, fieldKey) in componentSchemas[selectedSection?.section_type]?.fields" :key="fieldKey">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
+
+                                <!-- Text input -->
+                                <template x-if="field.type === 'text'">
+                                    <input type="text"
+                                           :value="selectedSection?.props?.[fieldKey]"
+                                           @input="updateProp(fieldKey, $event.target.value)"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                </template>
+
+                                <!-- Textarea -->
+                                <template x-if="field.type === 'textarea'">
+                                    <textarea rows="4"
+                                              @input="updateProp(fieldKey, $event.target.value)"
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                                              x-text="selectedSection?.props?.[fieldKey] || ''"></textarea>
+                                </template>
+
+                                <!-- Select dropdown -->
+                                <template x-if="field.type === 'select'">
+                                    <select :value="selectedSection?.props?.[fieldKey]"
+                                            @change="updateProp(fieldKey, $event.target.value)"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                        <template x-for="option in field.options" :key="option.value">
+                                            <option :value="option.value" x-text="option.label"></option>
+                                        </template>
+                                    </select>
+                                </template>
+
+                                <!-- Number input -->
+                                <template x-if="field.type === 'number'">
+                                    <input type="number"
+                                           :value="selectedSection?.props?.[fieldKey]"
+                                           @input="updateProp(fieldKey, parseInt($event.target.value))"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                </template>
+
+                                <!-- Color picker -->
+                                <template x-if="field.type === 'color'">
+                                    <input type="color"
+                                           :value="selectedSection?.props?.[fieldKey] || '#000000'"
+                                           @input="updateProp(fieldKey, $event.target.value)"
+                                           class="w-full h-10 px-1 py-1 border border-gray-300 rounded-lg">
+                                </template>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -477,6 +551,15 @@ function templateEditor() {
             if (schema && schema.tabs) {
                 this.currentTab = schema.tabs[0];
             }
+        },
+
+        updateProp(key, value) {
+            if (!this.selectedSection) return;
+            // Using $set to ensure Alpine reactivity
+            this.selectedSection.props = {
+                ...this.selectedSection.props,
+                [key]: value
+            };
         },
 
         async confirmDeleteSection(section) {
