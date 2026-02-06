@@ -1,0 +1,184 @@
+/* Template Editor Styles */
+
+#editor-container {
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Sidebar - Components */
+.components-sidebar {
+    width: 280px;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto;
+}
+
+.component-item {
+    cursor: grab;
+    transition: all 0.2s;
+}
+
+.component-item:hover {
+    background: #fef3c7;
+    border-color: #d4af37;
+}
+
+.component-item:active {
+    cursor: grabbing;
+}
+
+/* Canvas - Preview Area */
+.canvas-area {
+    flex: 1;
+    overflow-y: auto;
+    background: #f3f4f6;
+    padding: 24px;
+}
+
+#editor-canvas {
+    margin: 0 auto;
+    background: white;
+    min-height: 600px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: max-width 0.3s ease;
+}
+
+/* Viewport sizes */
+.viewport-desktop {
+    max-width: 100%;
+}
+
+.viewport-tablet {
+    max-width: 768px;
+}
+
+.viewport-mobile {
+    max-width: 375px;
+}
+
+/* Section wrapper for drag-drop */
+.section-wrapper {
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.section-wrapper:hover {
+    border-color: #d4af37;
+}
+
+.section-wrapper.selected {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+}
+
+.section-actions {
+    position: absolute;
+    top: -14px;
+    right: 8px;
+    display: none;
+    gap: 4px;
+}
+
+.section-wrapper:hover .section-actions,
+.section-wrapper.selected .section-actions {
+    display: flex;
+}
+
+/* Drag and drop */
+.sortable-ghost {
+    opacity: 0.4;
+    background: #e5e7eb;
+    border: 2px dashed #9ca3af;
+}
+
+.sortable-drag {
+    opacity: 0.8;
+}
+
+.drop-indicator {
+    height: 4px;
+    background: #d4af37;
+    margin: 8px 0;
+    border-radius: 2px;
+}
+
+/* Properties Panel */
+.properties-panel {
+    width: 320px;
+    border-left: 1px solid #e5e7eb;
+    overflow-y: auto;
+}
+
+.property-tab {
+    transition: all 0.2s;
+}
+
+.property-tab.active {
+    border-bottom: 2px solid #d4af37;
+    color: #d4af37;
+}
+
+/* Empty state */
+.empty-canvas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #9ca3af;
+}
+
+/* Header toolbar */
+.editor-toolbar {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 24px;
+}
+
+.viewport-btn {
+    transition: all 0.2s;
+}
+
+.viewport-btn.active {
+    background: #d4af37;
+    color: white;
+}
+
+/* Media picker */
+.media-picker-item {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.media-picker-item:hover {
+    border-color: #d4af37;
+}
+
+.media-picker-item.selected {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+}
+
+/* Loading states */
+.saving-indicator {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Hide scrollbar but keep functionality */
+.components-sidebar::-webkit-scrollbar,
+.properties-panel::-webkit-scrollbar,
+.canvas-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.components-sidebar::-webkit-scrollbar-thumb,
+.properties-panel::-webkit-scrollbar-thumb,
+.canvas-area::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
